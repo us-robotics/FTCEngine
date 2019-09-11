@@ -10,7 +10,9 @@ public abstract class Behavior
 	/**
 	 * NOTE: Do not configure the electronics in the constructor, do them in the awake method!
 	 */
-	public Behavior() {}
+	public Behavior(Main opMode) {this.opMode = opMode;}
+
+	protected final Main opMode;
 
 	/**
 	 * This method will get invoked once between the init button and the play button

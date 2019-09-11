@@ -67,4 +67,16 @@ public abstract class Main extends OpMode
 			allBehaviors[i].stop();
 		}
 	}
+
+	public class Time
+	{
+		public Time(Main opMode)
+		{
+			this.opMode = opMode;
+		}
+
+		private Main opMode;
+
+//System.nanoTime?
+	}
 }
