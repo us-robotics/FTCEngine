@@ -17,9 +17,9 @@ public class Debug
 		return logListCapacity;
 	}
 
-	public static void setLogListCapacity(int logListCapacity) throws Exception
+	public static void setLogListCapacity(int logListCapacity)
 	{
-		if (logListCapacity <= 0) throw new Exception("logListCapacity must be a positive number!");
+		if (logListCapacity <= 0) throw new IllegalArgumentException("logListCapacity must be a positive number!");
 
 		Debug.logListCapacity = logListCapacity;
 		tryTrimLogList();
@@ -67,7 +67,7 @@ public class Debug
 	 */
 	public static String getLogged(int maxCount)
 	{
-		if (maxCount <= 0) return null;
+		if (maxCount <= 0) throw new IllegalArgumentException("maxCount must be a positive number");
 
 		StringBuilder builder = new StringBuilder();
 		int length = Math.min(maxCount, logList.size());

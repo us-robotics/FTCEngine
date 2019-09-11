@@ -2,27 +2,31 @@ package FTCEngine.Core;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+import java.util.ArrayList;
+import java.util.List;
 
 import FTCEngine.Debug;
 
 public abstract class Main extends OpMode
 {
+	private Behavior[] allBehaviors;
+
 	/**
-	 * @param allBehaviors All the behaviors we want to run. You are suppose to instantiate the new
-	 *                     behaviors using the "new" keyword and put them into an array
+	 * This method will be invoked once before init to get all the behaviors we want to run.
+	 * You should create the new behaviors using the "new" keyword and add them into the list
 	 */
-	public Main(Behavior[] allBehaviors)
-	{
-		this.allBehaviors = allBehaviors;
-	}
-
-	private final Behavior[] allBehaviors;
-
+	public abstract void addBehaviors(List<Behavior> behaviorList);
 
 	@Override
 	public void init()
 	{
+		//Initialize all behaviors
+		ArrayList<Behavior> behaviors = new ArrayList<>();
+		addBehaviors(behaviors);
+
+		allBehaviors = new Behavior[behaviors.size()];
+		behaviors.toArray(allBehaviors);
+
 		for (int i = 0; i < allBehaviors.length; i++)
 		{
 			allBehaviors[i].awake(hardwareMap);
