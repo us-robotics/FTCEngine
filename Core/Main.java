@@ -52,7 +52,7 @@ public abstract class Main extends OpMode
 			allBehaviors[i].update();
 		}
 
-		telemetry.addData("", Debug.getLogged(5));
+//		telemetry.addData("", Debug.getLogged(5));
 		telemetry.update();
 	}
 
