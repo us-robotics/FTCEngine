@@ -21,7 +21,7 @@ public abstract class Behavior
 	protected final Time time;
 
 	/**
-	 * This method will get invoked once between the init button and the play button
+	 * This method will get invoked one time between the init button and the play button
 	 * Should mostly be used to initialize the electronics
 	 */
 	public void awake(HardwareMap hardwareMap) {}

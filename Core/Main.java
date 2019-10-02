@@ -27,7 +27,7 @@ public abstract class Main extends OpMode
 	public abstract void addBehaviors(List<Behavior> behaviorList);
 
 	@Override
-	public void init()
+	public final void init()
 	{
 		//Initialize all behaviors
 		ArrayList<Behavior> behaviors = new ArrayList<>();
@@ -45,7 +45,7 @@ public abstract class Main extends OpMode
 	}
 
 	@Override
-	public void start()
+	public final void start()
 	{
 		super.start();
 
@@ -56,7 +56,7 @@ public abstract class Main extends OpMode
 	}
 
 	@Override
-	public void loop()
+	public final void loop()
 	{
 		for (int i = 0; i < allBehaviors.length; i++)
 		{
@@ -71,7 +71,7 @@ public abstract class Main extends OpMode
 
 
 	@Override
-	public void stop()
+	public final void stop()
 	{
 		super.stop();
 

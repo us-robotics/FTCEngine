@@ -115,7 +115,7 @@ public final class Vector3
 	}
 
 	/**
-	 * Returns the angle in degrees between the two vectors
+	 * Returns the angle in degrees between the two vectors, with respect to the origin
 	 */
 	public static float angle(Vector3 vector1, Vector3 vector2)
 	{
@@ -123,6 +123,17 @@ public final class Vector3
 		if (Mathf.almostEquals(divider, 0f)) return 0f;
 
 		return (float)Math.acos((double)Mathf.clamp(dot(vector1, vector2) / divider, -1f, 1f)) * Mathf.Radian2Degree;
+	}
+
+	public static Vector3 lerp(Vector3 start, Vector3 end, float time)
+	{
+		time = Mathf.clamp01(time);
+		return new Vector3(Mathf.lerpUnclamped(start.x, end.x, time), Mathf.lerpUnclamped(start.y, end.y, time), Mathf.lerpUnclamped(start.z, end.z, time));
+	}
+
+	public static Vector3 lerpUnclamped(Vector3 start, Vector3 end, float time)
+	{
+		return new Vector3(Mathf.lerpUnclamped(start.x, end.x, time), Mathf.lerpUnclamped(start.y, end.y, time), Mathf.lerpUnclamped(start.z, end.z, time));
 	}
 
 	@Override
