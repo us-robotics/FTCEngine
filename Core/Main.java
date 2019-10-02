@@ -9,7 +9,16 @@ import FTCEngine.Debug;
 
 public abstract class Main extends OpMode
 {
+	public Main()
+	{
+		timeControl = new Time.Control();
+		time = new Time(timeControl);
+	}
+
 	private Behavior[] allBehaviors;
+
+	public final Time time;
+	private final Time.Control timeControl;
 
 	/**
 	 * This method will be invoked once before init to get all the behaviors we want to run.
@@ -26,6 +35,8 @@ public abstract class Main extends OpMode
 
 		allBehaviors = new Behavior[behaviors.size()];
 		behaviors.toArray(allBehaviors);
+
+		timeControl.onInit();
 
 		for (int i = 0; i < allBehaviors.length; i++)
 		{
@@ -54,6 +65,8 @@ public abstract class Main extends OpMode
 
 		telemetry.addData("", Debug.getLogged(5));
 		telemetry.update();
+
+		timeControl.afterLoop();
 	}
 
 
@@ -66,17 +79,5 @@ public abstract class Main extends OpMode
 		{
 			allBehaviors[i].stop();
 		}
-	}
-
-	public class Time
-	{
-		public Time(Main opMode)
-		{
-			this.opMode = opMode;
-		}
-
-		private Main opMode;
-
-//System.nanoTime?
 	}
 }
