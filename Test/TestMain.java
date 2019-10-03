@@ -1,5 +1,6 @@
 package FTCEngine.Test;
 
+import org.firstinspires.ftc.teamcode.TestBehavior;
 import org.firstinspires.ftc.teamcode.TestOp;
 
 import java.text.DecimalFormat;
@@ -10,14 +11,11 @@ public class TestMain
 {
 	public static void main(String[] args)
 	{
-		TestOp op = new TestOp();
-
-		op.init();
-		op.start();
-
-		while (true)
-		{
-			op.loop();
-		}
+//		TestOp op = new TestOp();
+//
+//		op.init();
+//		op.start();
+//
+//		TestBehavior behavior = op.getBehavior(TestBehavior.class);
 	}
 }

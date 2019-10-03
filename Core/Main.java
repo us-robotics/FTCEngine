@@ -61,7 +61,7 @@ public abstract class Main extends OpMode
 	 */
 	public <T extends Behavior> T getBehavior(Class<T> behaviorClass)
 	{
-		int index = CollectionHelper.binarySearch(allBehaviors, (Class<Behavior>)behaviorClass, PriorityExtractor.behaviorExtractor, PriorityExtractor.classExtractor);
+		int index = CollectionHelper.binarySearch(allBehaviors, behaviorClass, PriorityExtractor.behaviorExtractor, PriorityExtractor.classExtractor);
 		return index < 0 ? null : (T)allBehaviors.get(index);
 	}
 
@@ -204,10 +204,10 @@ public abstract class Main extends OpMode
 			}
 		}
 
-		public static class ClassExtractor implements CollectionHelper.PriorityExtractor<Class<Behavior>>
+		public static class ClassExtractor implements CollectionHelper.PriorityExtractor<Class<?>>
 		{
 			@Override
-			public int getPriority(Class<Behavior> item)
+			public int getPriority(Class<?> item)
 			{
 				return item.hashCode();
 			}

@@ -45,11 +45,14 @@ public class CollectionHelper
 			int compared = Integer.compare(elementExtractor.getPriority(current), keyPriority);
 
 			if (compared == 0) return index;
+
 			if (compared > 0) maxIndex = index - 1;
 			else minIndex = index + 1;
 
 			index = (minIndex + maxIndex) / 2;
 			if (minIndex > maxIndex) return ~minIndex;
+
+			current = list.get(index);
 		}
 	}
 
