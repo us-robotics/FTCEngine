@@ -1,5 +1,7 @@
 package FTCEngine.Test;
 
+import org.firstinspires.ftc.teamcode.TestOp;
+
 import java.text.DecimalFormat;
 
 import FTCEngine.Math.Vector2;
@@ -8,9 +10,14 @@ public class TestMain
 {
 	public static void main(String[] args)
 	{
-		Vector2 a = new Vector2(-3f, 0f);
-		Vector2 b = new Vector2(3f, 0f);
+		TestOp op = new TestOp();
 
-		System.out.println(Vector2.signedAngle(a, b));
+		op.init();
+		op.start();
+
+		while (true)
+		{
+			op.loop();
+		}
 	}
 }

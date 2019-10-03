@@ -8,13 +8,14 @@ import java.util.List;
 import java.util.Map;
 
 import FTCEngine.Experimental.Action;
+import FTCEngine.Helpers.CollectionHelper;
 
 public abstract class Main extends OpMode
 {
 	public Main()
 	{
 		//Create all allHelpers
-		allHelpers = new HashMap<Class<?>, Helper>();
+		allHelpers = new HashMap<Class, Helper>();
 		Action<Helper> assignHelper = new Action<Helper>()
 		{
 			@Override
@@ -26,12 +27,13 @@ public abstract class Main extends OpMode
 
 		assignHelper.accept(new Time(this));
 		assignHelper.accept(new Input(this));
+		assignHelper.accept(new Telemetry(this));
 	}
 
-	private Behavior[] allBehaviors; //Semi-readonly
-	private final HashMap<Class<?>, Helper> allHelpers;
+	private List<Behavior> allBehaviors; //Semi-readonly, sorted by class object hashcode for binary search
+	private final HashMap<Class, Helper> allHelpers;
 
-	private OpModePhase currentPhase = OpModePhase.invalid;
+	private OpModePhase currentPhase = OpModePhase.INVALID;
 
 	/**
 	 * This method will be invoked once before init to get all the behaviors we want to run.
@@ -47,10 +49,20 @@ public abstract class Main extends OpMode
 	/**
 	 * Gets the helper object with its reflection class type
 	 */
-	public <T extends Helper> T getHelper(Class<T> tClass)
+	public <T extends Helper> T getHelper(Class<T> helperClass)
 	{
-		Helper result = allHelpers.get(tClass);
-		return tClass.isInstance(result) ? (T)result : null;
+		Helper result = allHelpers.get(helperClass);
+		return helperClass.isInstance(result) ? (T)result : null;
+	}
+
+	/**
+	 * Gets the behavior from its class object
+	 * Returns null if found none
+	 */
+	public <T extends Behavior> T getBehavior(Class<T> behaviorClass)
+	{
+		int index = CollectionHelper.binarySearch(allBehaviors, (Class<Behavior>)behaviorClass, PriorityExtractor.behaviorExtractor, PriorityExtractor.classExtractor);
+		return index < 0 ? null : (T)allBehaviors.get(index);
 	}
 
 	@Override
@@ -60,20 +72,37 @@ public abstract class Main extends OpMode
 		ArrayList<Behavior> behaviors = new ArrayList<>();
 		addBehaviors(behaviors);
 
-		allBehaviors = new Behavior[behaviors.size()];
-		behaviors.toArray(allBehaviors);
+		allBehaviors = initializeBehaviors(behaviors);
 
 		//Initialize internal op mode
-		currentPhase = OpModePhase.initialize;
-		for (Map.Entry<Class<?>, Helper> entry : allHelpers.entrySet()) entry.getValue().beforeInit();
+		currentPhase = OpModePhase.INITIALIZE;
+		for (Map.Entry<Class, Helper> entry : allHelpers.entrySet()) entry.getValue().beforeInit();
 
 		//Awake all behaviors
-		for (int i = 0; i < allBehaviors.length; i++)
+		for (int i = 0; i < allBehaviors.size(); i++)
 		{
-			allBehaviors[i].awake(hardwareMap);
+			allBehaviors.get(i).awake(hardwareMap);
 		}
 
-		for (Map.Entry<Class<?>, Helper> entry : allHelpers.entrySet()) entry.getValue().afterInit();
+		telemetry.update();
+
+		for (Map.Entry<Class, Helper> entry : allHelpers.entrySet()) entry.getValue().afterInit();
+	}
+
+	private static List<Behavior> initializeBehaviors(ArrayList<Behavior> source)
+	{
+		List<Behavior> result = new ArrayList<Behavior>(source.size());
+		CollectionHelper.sort(source, PriorityExtractor.behaviorExtractor); //Sorts by class object hashcode
+
+		for (int i = 0; i < source.size(); i++)
+		{
+			Behavior current = source.get(i);
+
+			if (i == 0 || current.getClass() != result.get(i - 1).getClass()) result.add(current);
+			else throw new IllegalArgumentException("Cannot add two behaviors with the same type! Duplicate type: " + current.getClass());
+		}
+
+		return result;
 	}
 
 	@Override
@@ -81,32 +110,34 @@ public abstract class Main extends OpMode
 	{
 		super.start();
 
-		currentPhase = OpModePhase.start;
-		for (Map.Entry<Class<?>, Helper> entry : allHelpers.entrySet()) entry.getValue().beforeStart();
+		currentPhase = OpModePhase.START;
+		for (Map.Entry<Class, Helper> entry : allHelpers.entrySet()) entry.getValue().beforeStart();
 
-		for (int i = 0; i < allBehaviors.length; i++)
+		for (int i = 0; i < allBehaviors.size(); i++)
 		{
-			allBehaviors[i].start();
+			allBehaviors.get(i).start();
 		}
 
-		for (Map.Entry<Class<?>, Helper> entry : allHelpers.entrySet()) entry.getValue().afterStart();
+		telemetry.update();
+
+		for (Map.Entry<Class, Helper> entry : allHelpers.entrySet()) entry.getValue().afterStart();
 	}
 
 	@Override
 	public final void loop()
 	{
-		currentPhase = OpModePhase.loop;
-		for (Map.Entry<Class<?>, Helper> entry : allHelpers.entrySet()) entry.getValue().beforeLoop();
+		currentPhase = OpModePhase.LOOP;
+		for (Map.Entry<Class, Helper> entry : allHelpers.entrySet()) entry.getValue().beforeLoop();
 
-		for (int i = 0; i < allBehaviors.length; i++)
+		for (int i = 0; i < allBehaviors.size(); i++)
 		{
-			allBehaviors[i].update();
+			allBehaviors.get(i).update();
 		}
 
 //		telemetry.addData("", Debug.getLogged(5));
 		telemetry.update();
 
-		for (Map.Entry<Class<?>, Helper> entry : allHelpers.entrySet()) entry.getValue().afterLoop();
+		for (Map.Entry<Class, Helper> entry : allHelpers.entrySet()) entry.getValue().afterLoop();
 	}
 
 
@@ -115,16 +146,18 @@ public abstract class Main extends OpMode
 	{
 		super.stop();
 
-		currentPhase = OpModePhase.stop;
-		for (Map.Entry<Class<?>, Helper> entry : allHelpers.entrySet()) entry.getValue().beforeStop();
+		currentPhase = OpModePhase.STOP;
+		for (Map.Entry<Class, Helper> entry : allHelpers.entrySet()) entry.getValue().beforeStop();
 
-		for (int i = 0; i < allBehaviors.length; i++)
+		for (int i = 0; i < allBehaviors.size(); i++)
 		{
-			allBehaviors[i].stop();
+			allBehaviors.get(i).stop();
 		}
 
-		for (Map.Entry<Class<?>, Helper> entry : allHelpers.entrySet()) entry.getValue().afterStop();
-		currentPhase = OpModePhase.invalid;
+		telemetry.update();
+
+		for (Map.Entry<Class, Helper> entry : allHelpers.entrySet()) entry.getValue().afterStop();
+		currentPhase = OpModePhase.INVALID;
 	}
 
 	/**
@@ -133,23 +166,51 @@ public abstract class Main extends OpMode
 	 */
 	static class Helper
 	{
-		public Helper(Main main)
+		public Helper(Main opMode)
 		{
-			this.main = main;
+			this.opMode = opMode;
 		}
 
-		protected final Main main;
+		protected final Main opMode;
 
 		public void beforeInit() {}
+
 		public void afterInit() {}
 
 		public void beforeStart() {}
+
 		public void afterStart() {}
 
 		public void beforeLoop() {}
+
 		public void afterLoop() {}
 
 		public void beforeStop() {}
+
 		public void afterStop() {}
+	}
+
+	private static class PriorityExtractor
+	{
+		public static final BehaviorExtractor behaviorExtractor = new BehaviorExtractor();
+		public static final ClassExtractor classExtractor = new ClassExtractor();
+
+		public static class BehaviorExtractor implements CollectionHelper.PriorityExtractor<FTCEngine.Core.Behavior>
+		{
+			@Override
+			public int getPriority(FTCEngine.Core.Behavior item)
+			{
+				return item.getClass().hashCode();
+			}
+		}
+
+		public static class ClassExtractor implements CollectionHelper.PriorityExtractor<Class<Behavior>>
+		{
+			@Override
+			public int getPriority(Class<Behavior> item)
+			{
+				return item.hashCode();
+			}
+		}
 	}
 }

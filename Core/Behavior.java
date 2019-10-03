@@ -16,16 +16,18 @@ public abstract class Behavior
 
 		time = opMode.getHelper(Time.class);
 		input = opMode.getHelper(Input.class);
+		telemetry = opMode.getHelper(Telemetry.class);
 	}
 
 	protected final Main opMode;
 
 	protected final Time time;
 	protected final Input input;
+	protected final Telemetry telemetry;
 
 	/**
 	 * This method will get invoked one time between the init button and the play button
-	 * Should mostly be used to initialize the electronics
+	 * Should mostly be used to INITIALIZE the electronics
 	 */
 	public void awake(HardwareMap hardwareMap) {}
 
@@ -40,7 +42,7 @@ public abstract class Behavior
 	public void update() {}
 
 	/**
-	 * This method will get invoked when the driver pressed the stop button
+	 * This method will get invoked when the driver pressed the STOP button
 	 */
 	public void stop() {}
 }

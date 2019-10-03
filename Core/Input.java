@@ -2,21 +2,41 @@ package FTCEngine.Core;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import java.util.ArrayList;
+
 import FTCEngine.Math.Vector2;
 
 public class Input extends Main.Helper
 {
-	public Input(Main main)
+	public Input(Main opMode)
 	{
-		super(main);
+		super(opMode);
+	}
+
+	private ArrayList<ButtonState> registeredButtons = new ArrayList<ButtonState>();
+
+	/**
+	 * Tell the input that the program is going to use this button
+	 * The methods would not work if you do not register the button!
+	 * You cannot register any buttons anymore after entering the main LOOP
+	 */
+	public void registerButton(Source source, Button button)
+	{
+		if (opMode.getPhase() != OpModePhase.INITIALIZE && opMode.getPhase() != OpModePhase.START) throw new IllegalStateException("Invalid OpMode state to register button: " + opMode.getPhase());
+
+	}
+
+	private ButtonState getButtonState(Source source, Button button)
+	{
+		throw new UnsupportedOperationException();
 	}
 
 	public Gamepad getGamepad(Source source)
 	{
 		switch (source)
 		{
-			case controller1: return main.gamepad1;
-			case controller2: return main.gamepad2;
+			case CONTROLLER_1: return opMode.gamepad1;
+			case CONTROLLER_2: return opMode.gamepad2;
 		}
 
 		throw new IllegalArgumentException("Source (" + source + ") is an illegal source for gamepad");
@@ -43,8 +63,8 @@ public class Input extends Main.Helper
 
 		switch (joystick)
 		{
-			case left: return new Vector2(gamepad.left_stick_x, gamepad.left_stick_y);
-			case right: return new Vector2(gamepad.right_stick_x, gamepad.right_stick_y);
+			case LEFT: return new Vector2(gamepad.left_stick_x, gamepad.left_stick_y);
+			case RIGHT: return new Vector2(gamepad.right_stick_x, gamepad.right_stick_y);
 		}
 
 		throw new IllegalArgumentException("Joystick (" + joystick + ") is illegal");
@@ -68,25 +88,36 @@ public class Input extends Main.Helper
 
 	private void checkPhase()
 	{
-		if (main.getPhase() != OpModePhase.loop) throw new IllegalStateException("Cannot access input outside of the core loop!");
+		if (opMode.getPhase() != OpModePhase.LOOP) throw new IllegalStateException("Cannot access input outside of the core LOOP!");
 	}
 
 	public enum Button
 	{
-		idk,
-		randomthings,
-		someotherkey
+		IDK,
+		RANDOMTHINGS,
+		SOMEOTHERKEY;
+
+		public static final int length = Button.values().length;
 	}
 
 	public enum Joystick
 	{
-		left,
-		right
+		LEFT,
+		RIGHT;
+
+		public static final int length = Joystick.values().length;
 	}
 
 	public enum Source
 	{
-		controller1,
-		controller2
+		CONTROLLER_1,
+		CONTROLLER_2;
+
+		public static final int length = Source.values().length;
+	}
+
+	private static class ButtonState
+	{
+
 	}
 }

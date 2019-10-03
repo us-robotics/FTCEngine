@@ -48,7 +48,7 @@ public class Mathf
 	}
 
 	/**
-	 * Linear-interpolation, returns a value between start and end based on the percentage of time
+	 * Linear-interpolation, returns a value between START and end based on the percentage of time
 	 */
 	public static float lerp(float start, float end, float time)
 	{
