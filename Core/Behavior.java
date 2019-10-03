@@ -13,12 +13,15 @@ public abstract class Behavior
 	public Behavior(Main opMode)
 	{
 		this.opMode = opMode;
-		time = opMode.time;
+
+		time = opMode.getHelper(Time.class);
+		input = opMode.getHelper(Input.class);
 	}
 
 	protected final Main opMode;
 
 	protected final Time time;
+	protected final Input input;
 
 	/**
 	 * This method will get invoked one time between the init button and the play button
