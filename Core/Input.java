@@ -3,7 +3,9 @@ package FTCEngine.Core;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
+import FTCEngine.Helpers.CollectionHelper;
 import FTCEngine.Math.Vector2;
 
 public class Input extends Main.Helper
@@ -24,11 +26,18 @@ public class Input extends Main.Helper
 	{
 		if (opMode.getPhase() != OpModePhase.INITIALIZE && opMode.getPhase() != OpModePhase.START) throw new IllegalStateException("Invalid OpMode state to register button: " + opMode.getPhase());
 
+		int index = CollectionHelper.binarySearch(registeredButtons, PriorityExtractor.instance, PriorityExtractor.getPriority(source, button));
+		if (index >= 0) return; //Button already registered
+
+		registeredButtons.add(~index, new ButtonState(source, button));
 	}
 
 	private ButtonState getButtonState(Source source, Button button)
 	{
-		throw new UnsupportedOperationException();
+		int index = CollectionHelper.binarySearch(registeredButtons, PriorityExtractor.instance, PriorityExtractor.getPriority(source, button));
+
+		if (index >= 0) return registeredButtons.get(index);
+		throw new IllegalArgumentException("No registered button with " + source + " and " + button);
 	}
 
 	public Gamepad getGamepad(Source source)
@@ -44,6 +53,7 @@ public class Input extends Main.Helper
 
 	public boolean getButton(Source source, Button button)
 	{
+		checkPhase();
 		throw new UnsupportedOperationException();
 	}
 
@@ -59,6 +69,7 @@ public class Input extends Main.Helper
 
 	public Vector2 getVector(Source source, Joystick joystick)
 	{
+		checkPhase();
 		Gamepad gamepad = getGamepad(source);
 
 		switch (joystick)
@@ -88,7 +99,7 @@ public class Input extends Main.Helper
 
 	private void checkPhase()
 	{
-		if (opMode.getPhase() != OpModePhase.LOOP) throw new IllegalStateException("Cannot access input outside of the core LOOP!");
+		if (opMode.getPhase() != OpModePhase.LOOP) throw new IllegalStateException("Cannot access input outside of the core loop!");
 	}
 
 	public enum Button
@@ -118,6 +129,47 @@ public class Input extends Main.Helper
 
 	private static class ButtonState
 	{
+		public ButtonState(Source source, Button button)
+		{
+			this.source = source;
+			this.button = button;
+		}
 
+		public final Source source;
+		public final Button button;
+
+		private boolean currentPressed;
+		private boolean previousPressed;
+
+		public boolean isCurrentPressed()
+		{
+			return currentPressed;
+		}
+
+		public boolean isPreviousPressed()
+		{
+			return previousPressed;
+		}
+
+		public void updateButton()
+		{
+//TODO
+		}
+	}
+
+	private static class PriorityExtractor implements CollectionHelper.PriorityExtractor<ButtonState>
+	{
+		public static final PriorityExtractor instance = new PriorityExtractor();
+
+		@Override
+		public int getPriority(ButtonState item)
+		{
+			return getPriority(item.source, item.button);
+		}
+
+		public static int getPriority(Source source, Button button)
+		{
+			return source.ordinal() * Button.length + button.ordinal();
+		}
 	}
 }

@@ -61,7 +61,7 @@ public abstract class Main extends OpMode
 	 */
 	public <T extends Behavior> T getBehavior(Class<T> behaviorClass)
 	{
-		int index = CollectionHelper.binarySearch(allBehaviors, behaviorClass, PriorityExtractor.behaviorExtractor, PriorityExtractor.classExtractor);
+		int index = CollectionHelper.binarySearch(allBehaviors, PriorityExtractor.behaviorExtractor, behaviorClass, PriorityExtractor.classExtractor);
 		return index < 0 ? null : (T)allBehaviors.get(index);
 	}
 

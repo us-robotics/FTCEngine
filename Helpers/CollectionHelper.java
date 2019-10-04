@@ -21,7 +21,7 @@ public class CollectionHelper
 	 */
 	public static <T> int binarySearch(List<T> list, T key, PriorityExtractor<T> extractor)
 	{
-		return binarySearch(list, key, extractor, extractor);
+		return binarySearch(list, extractor, extractor.getPriority(key));
 	}
 
 	/**
@@ -30,15 +30,24 @@ public class CollectionHelper
 	 * Returns an negative number if not fount. You can bit flip the not found result to get where the key
 	 * would be if it in the list
 	 */
-	public static <T, U> int binarySearch(List<T> list, U key, PriorityExtractor<T> elementExtractor, PriorityExtractor<U> keyExtractor)
+	public static <T, U> int binarySearch(List<T> list, PriorityExtractor<T> elementExtractor, U key, PriorityExtractor<U> keyExtractor)
+	{
+		return binarySearch(list, elementExtractor, keyExtractor.getPriority(key));
+	}
+
+	/**
+	 * Binary search the list, but compares the items using the priorities extracted by the PriorityExtractor
+	 * NOTE: This method enables you to just pass in an integer as the priority of the key
+	 * Returns an negative number if not fount. You can bit flip the not found result to get where the key
+	 * would be if it in the list
+	 */
+	public static <T> int binarySearch(List<T> list, PriorityExtractor<T> elementExtractor, int keyPriority)
 	{
 		int minIndex = 0;
 		int maxIndex = list.size() - 1;
 
 		int index = (minIndex + maxIndex) / 2;
 		T current = list.get(index);
-
-		int keyPriority = keyExtractor.getPriority(key);
 
 		while (true)
 		{
