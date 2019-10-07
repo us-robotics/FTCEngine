@@ -19,21 +19,6 @@ public class Input extends Main.Helper
 
 	private ArrayList<ButtonState> registeredButtons = new ArrayList<ButtonState>();
 
-	private static HashMap<Button, Func<Gamepad, Boolean>> allButtonToAccessor = new HashMap<Button, Func<Gamepad, Boolean>>()
-	{{
-		put(Button.A, new Func<Gamepad, Boolean>()
-		{
-			@Override
-			public Boolean apply(Gamepad input) {return input.a;}
-		});
-
-		put(Button.B, new Func<Gamepad, Boolean>()
-		{
-			@Override
-			public Boolean apply(Gamepad input) {return input.b;}
-		});
-	}};
-
 	/**
 	 * Tell the input that the program is going to use this button
 	 * The methods would not work if you do not register the button!
@@ -150,8 +135,8 @@ public class Input extends Main.Helper
 		B,
 		X,
 		Y,
-		BACK,
 		START,
+		BACK,
 		GUIDE,
 		DPAD_RIGHT,
 		DPAD_LEFT,
@@ -182,6 +167,8 @@ public class Input extends Main.Helper
 	{
 		public ButtonState(Source source, Button button)
 		{
+			if (!allButtonToAccessor.containsKey(button)) throw new IllegalArgumentException("The button (" + button + ") cannot be registered.");
+
 			this.source = source;
 			this.button = button;
 		}
@@ -209,6 +196,87 @@ public class Input extends Main.Helper
 			currentPressed = isPressed;
 		}
 	}
+
+	private static HashMap<Button, Func<Gamepad, Boolean>> allButtonToAccessor = new HashMap<Button, Func<Gamepad, Boolean>>()
+	{{
+		put(Button.A, new Func<Gamepad, Boolean>()
+		{
+			@Override
+			public Boolean apply(Gamepad input) {return input.a;}
+		});
+
+		put(Button.B, new Func<Gamepad, Boolean>()
+		{
+			@Override
+			public Boolean apply(Gamepad input) {return input.b;}
+		});
+
+		put(Button.X, new Func<Gamepad, Boolean>()
+		{
+			@Override
+			public Boolean apply(Gamepad input) {return input.x;}
+		});
+
+		put(Button.Y, new Func<Gamepad, Boolean>()
+		{
+			@Override
+			public Boolean apply(Gamepad input) {return input.y;}
+		});
+
+		put(Button.START, new Func<Gamepad, Boolean>()
+		{
+			@Override
+			public Boolean apply(Gamepad input) {return input.start;}
+		});
+
+		put(Button.BACK, new Func<Gamepad, Boolean>()
+		{
+			@Override
+			public Boolean apply(Gamepad input) {return input.back;}
+		});
+
+		put(Button.GUIDE, new Func<Gamepad, Boolean>()
+		{
+			@Override
+			public Boolean apply(Gamepad input) {return input.guide;}
+		});
+
+		put(Button.DPAD_RIGHT, new Func<Gamepad, Boolean>()
+		{
+			@Override
+			public Boolean apply(Gamepad input) {return input.dpad_right;}
+		});
+
+		put(Button.DPAD_LEFT, new Func<Gamepad, Boolean>()
+		{
+			@Override
+			public Boolean apply(Gamepad input) {return input.dpad_left;}
+		});
+
+		put(Button.DPAD_UP, new Func<Gamepad, Boolean>()
+		{
+			@Override
+			public Boolean apply(Gamepad input) {return input.dpad_up;}
+		});
+
+		put(Button.DPAD_DOWN, new Func<Gamepad, Boolean>()
+		{
+			@Override
+			public Boolean apply(Gamepad input) {return input.dpad_down;}
+		});
+
+		put(Button.LEFT_BUMPER, new Func<Gamepad, Boolean>()
+		{
+			@Override
+			public Boolean apply(Gamepad input) {return input.left_bumper;}
+		});
+
+		put(Button.RIGHT_BUMPER, new Func<Gamepad, Boolean>()
+		{
+			@Override
+			public Boolean apply(Gamepad input) {return input.right_bumper;}
+		});
+	}};
 
 	private static class PriorityExtractor implements CollectionHelper.PriorityExtractor<ButtonState>
 	{

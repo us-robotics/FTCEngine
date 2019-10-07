@@ -44,6 +44,9 @@ public final class Vector2
 	 */
 	public Vector2 scale(Vector2 other) {return new Vector2(x * other.x, y * other.y);}
 
+	/**
+	 * Change the magnitude of the vector to one, without modifying its direction
+	 */
 	public Vector2 normalize()
 	{
 		float magnitude = getMagnitude();
@@ -51,7 +54,15 @@ public final class Vector2
 	}
 
 	/**
-	 * Rotates this vector by angle in degrees
+	 * Normalizes each of the axis values separately
+	 */
+	public Vector2 individualNormalize()
+	{
+		return new Vector2(Mathf.normalize(x), Mathf.normalize(y));
+	}
+
+	/**
+	 * Returns the rotated version of this vector by angle in degrees around the origin
 	 */
 	public Vector2 rotate(float angle)
 	{
@@ -64,7 +75,15 @@ public final class Vector2
 	}
 
 	/**
-	 * Returns an element based on index, x = 0, y = 1, z = 2
+	 * Returns the rotated version of this vector by angle in degrees around pivot
+	 */
+	public Vector2 rotate(float angle, Vector2 pivot)
+	{
+		return sub(pivot).rotate(angle).add(pivot);
+	}
+
+	/**
+	 * Returns an element based on index, x = 0, y = 1
 	 */
 	public float get(int index)
 	{
@@ -75,6 +94,38 @@ public final class Vector2
 		}
 
 		throw new IndexOutOfBoundsException();
+	}
+
+	/**
+	 * Returns a new Vector3 that uses this vector's x for x, this vector's y for y, and 0f for z
+	 */
+	public Vector3 toXY()
+	{
+		return new Vector3(this);
+	}
+
+	/**
+	 * Returns a new Vector3 that uses this vector's x for x, this vector's y for y, and z for z
+	 */
+	public Vector3 toXY(float z)
+	{
+		return new Vector3(this, z);
+	}
+
+	/**
+	 * Returns a new Vector3 that uses this vector's x for x, 0f for y, and this vector's y for z
+	 */
+	public Vector3 toXZ()
+	{
+		return new Vector3(x, 0f, y);
+	}
+
+	/**
+	 * Returns a new Vector3 that uses this vector's x for x, y for y, and this vector's y for z
+	 */
+	public Vector3 toXZ(float y)
+	{
+		return new Vector3(x, y, this.y);
 	}
 
 	/**

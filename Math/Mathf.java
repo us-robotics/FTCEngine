@@ -72,6 +72,23 @@ public class Mathf
 	}
 
 	/**
+	 * Returns -1 if value is negative; 1 if value is positive; 0 if value is 0
+	 */
+	public static int normalize(float value)
+	{
+		return almostEquals(value, 0f) ? 0 : (value < 0f ? -1 : 1);
+	}
+
+	/**
+	 * Returns -1 if value is negative; 1 if value is positive; 0 if value is 0
+	 */
+	public static int normalize(int value)
+	{
+		if (value == 0) return 0;
+		return value / Math.abs(value);
+	}
+
+	/**
 	 * Convert value to an angle between -180 (Exclusive) and 180 (Inclusive) with the same rotational value as input.
 	 */
 	public static float toSignedAngle(float value)

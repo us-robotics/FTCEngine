@@ -11,6 +11,18 @@ public final class Vector3
 		this.z = z;
 	}
 
+	public Vector3(Vector2 xy)
+	{
+		this(xy, 0f);
+	}
+
+	public Vector3(Vector2 xy, float z)
+	{
+		this.x = xy.x;
+		this.y = xy.y;
+		this.z = z;
+	}
+
 	public final float x;
 	public final float y;
 	public final float z;
@@ -51,10 +63,21 @@ public final class Vector3
 	 */
 	public Vector3 scale(Vector3 other) {return new Vector3(x * other.x, y * other.y, z * other.z);}
 
+	/**
+	 * Change the magnitude of the vector to one, without modifying its direction
+	 */
 	public Vector3 normalize()
 	{
 		float magnitude = getMagnitude();
 		return Mathf.almostEquals(magnitude, 0f) ? zero : div(magnitude);
+	}
+
+	/**
+	 * Normalizes each of the axis values separately
+	 */
+	public Vector3 individualNormalize()
+	{
+		return new Vector3(Mathf.normalize(x), Mathf.normalize(y), Mathf.normalize(z));
 	}
 
 	/**
@@ -86,14 +109,6 @@ public final class Vector3
 	public Vector2 toXZ()
 	{
 		return new Vector2(x, z);
-	}
-
-	/**
-	 * Returns a Vector2 with this vector3's y and z
-	 */
-	public Vector2 toYZ()
-	{
-		return new Vector2(y, z);
 	}
 
 	/**
