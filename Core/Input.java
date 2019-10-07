@@ -4,7 +4,9 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
+import FTCEngine.Experimental.Func;
 import FTCEngine.Helpers.CollectionHelper;
 import FTCEngine.Math.Vector2;
 
@@ -16,6 +18,21 @@ public class Input extends Main.Helper
 	}
 
 	private ArrayList<ButtonState> registeredButtons = new ArrayList<ButtonState>();
+
+	private HashMap<Button, Func<Gamepad, Boolean>> buttonToAccessor = new HashMap<Button, Func<Gamepad, Boolean>>()
+	{{
+		put(Button.IDK, new Func<Gamepad, Boolean>()
+		{
+			@Override
+			public Boolean apply(Gamepad input) {return input.a;}
+		});
+
+		put(Button.SOMEOTHERKEY, new Func<Gamepad, Boolean>()
+		{
+			@Override
+			public Boolean apply(Gamepad input) {return input.b;}
+		});
+	}};
 
 	/**
 	 * Tell the input that the program is going to use this button
@@ -54,17 +71,23 @@ public class Input extends Main.Helper
 	public boolean getButton(Source source, Button button)
 	{
 		checkPhase();
-		throw new UnsupportedOperationException();
+		return getButtonState(source, button).currentPressed;
 	}
 
 	public boolean getButtonDown(Source source, Button button)
 	{
-		throw new UnsupportedOperationException();
+		checkPhase();
+
+		ButtonState state = getButtonState(source, button);
+		return state.isCurrentPressed() && !state.isPreviousPressed();
 	}
 
 	public boolean getButtonUp(Source source, Button button)
 	{
-		throw new UnsupportedOperationException();
+		checkPhase();
+
+		ButtonState state = getButtonState(source, button);
+		return !state.isCurrentPressed() && state.isPreviousPressed();
 	}
 
 	public Vector2 getVector(Source source, Joystick joystick)
@@ -138,14 +161,13 @@ public class Input extends Main.Helper
 		public final Source source;
 		public final Button button;
 
-		private boolean currentPressed;
-		private boolean previousPressed;
+		private boolean currentPressed; //WHY CAN THE OUTER CLASS ACCESS THESE TWO FIELDS??????
+		private boolean previousPressed; //JAVA IS SO BAD
 
 		public boolean isCurrentPressed()
 		{
 			return currentPressed;
 		}
-
 		public boolean isPreviousPressed()
 		{
 			return previousPressed;
@@ -154,6 +176,8 @@ public class Input extends Main.Helper
 		public void updateButton()
 		{
 //TODO
+
+
 		}
 	}
 
