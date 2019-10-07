@@ -73,6 +73,30 @@ public final class Vector3
 	}
 
 	/**
+	 * Returns a Vector2 with this vector3's x and y
+	 */
+	public Vector2 toXY()
+	{
+		return new Vector2(x, y);
+	}
+
+	/**
+	 * Returns a Vector2 with this vector3's x and z
+	 */
+	public Vector2 toXZ()
+	{
+		return new Vector2(x, z);
+	}
+
+	/**
+	 * Returns a Vector2 with this vector3's y and z
+	 */
+	public Vector2 toYZ()
+	{
+		return new Vector2(y, z);
+	}
+
+	/**
 	 * Gets the magnitude of this vector
 	 */
 	public float getMagnitude()

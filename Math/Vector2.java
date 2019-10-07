@@ -51,6 +51,19 @@ public final class Vector2
 	}
 
 	/**
+	 * Rotates this vector by angle in degrees
+	 */
+	public Vector2 rotate(float angle)
+	{
+		angle *= Mathf.Degree2Radian;
+
+		float sin = (float)Math.sin(angle);
+		float cos = (float)Math.cos(angle);
+
+		return new Vector2(cos * x - sin * y, sin * x + cos * y);
+	}
+
+	/**
 	 * Returns an element based on index, x = 0, y = 1, z = 2
 	 */
 	public float get(int index)

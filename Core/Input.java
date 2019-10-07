@@ -19,15 +19,15 @@ public class Input extends Main.Helper
 
 	private ArrayList<ButtonState> registeredButtons = new ArrayList<ButtonState>();
 
-	private HashMap<Button, Func<Gamepad, Boolean>> buttonToAccessor = new HashMap<Button, Func<Gamepad, Boolean>>()
+	private static HashMap<Button, Func<Gamepad, Boolean>> allButtonToAccessor = new HashMap<Button, Func<Gamepad, Boolean>>()
 	{{
-		put(Button.IDK, new Func<Gamepad, Boolean>()
+		put(Button.A, new Func<Gamepad, Boolean>()
 		{
 			@Override
 			public Boolean apply(Gamepad input) {return input.a;}
 		});
 
-		put(Button.SOMEOTHERKEY, new Func<Gamepad, Boolean>()
+		put(Button.B, new Func<Gamepad, Boolean>()
 		{
 			@Override
 			public Boolean apply(Gamepad input) {return input.b;}
@@ -90,26 +90,40 @@ public class Input extends Main.Helper
 		return !state.isCurrentPressed() && state.isPreviousPressed();
 	}
 
-	public Vector2 getVector(Source source, Joystick joystick)
+	public float getTrigger(Source source, Button trigger)
+	{
+		checkPhase();
+		Gamepad gamepad = getGamepad(source);
+
+		switch (trigger)
+		{
+			case LEFT_TRIGGER: return gamepad.left_trigger;
+			case RIGHT_TRIGGER: return gamepad.right_trigger;
+		}
+
+		throw new IllegalArgumentException("Trigger (" + trigger + ") is illegal");
+	}
+
+	public Vector2 getVector(Source source, Button joystick)
 	{
 		checkPhase();
 		Gamepad gamepad = getGamepad(source);
 
 		switch (joystick)
 		{
-			case LEFT: return new Vector2(gamepad.left_stick_x, gamepad.left_stick_y);
-			case RIGHT: return new Vector2(gamepad.right_stick_x, gamepad.right_stick_y);
+			case LEFT_JOYSTICK: return new Vector2(gamepad.left_stick_x, gamepad.left_stick_y);
+			case RIGHT_JOYSTICK: return new Vector2(gamepad.right_stick_x, gamepad.right_stick_y);
 		}
 
 		throw new IllegalArgumentException("Joystick (" + joystick + ") is illegal");
 	}
 
-	public Vector2 getDirection(Source source, Joystick joystick)
+	public Vector2 getDirection(Source source, Button joystick)
 	{
 		return getVector(source, joystick).normalize();
 	}
 
-	public float getMagnitude(Source source, Joystick joystick)
+	public float getMagnitude(Source source, Button joystick)
 	{
 		return getVector(source, joystick).getMagnitude();
 	}
@@ -118,6 +132,11 @@ public class Input extends Main.Helper
 	public void beforeLoop()
 	{
 		super.beforeLoop();
+
+		for (int i = 0; i < registeredButtons.size(); i++)
+		{
+			registeredButtons.get(i).updateButton(this);
+		}
 	}
 
 	private void checkPhase()
@@ -127,19 +146,28 @@ public class Input extends Main.Helper
 
 	public enum Button
 	{
-		IDK,
-		RANDOMTHINGS,
-		SOMEOTHERKEY;
+		A,
+		B,
+		X,
+		Y,
+		BACK,
+		START,
+		GUIDE,
+		DPAD_RIGHT,
+		DPAD_LEFT,
+		DPAD_UP,
+		DPAD_DOWN,
+
+		LEFT_BUMPER,
+		RIGHT_BUMPER,
+
+		LEFT_TRIGGER,
+		RIGHT_TRIGGER,
+
+		LEFT_JOYSTICK,
+		RIGHT_JOYSTICK;
 
 		public static final int length = Button.values().length;
-	}
-
-	public enum Joystick
-	{
-		LEFT,
-		RIGHT;
-
-		public static final int length = Joystick.values().length;
 	}
 
 	public enum Source
@@ -173,11 +201,12 @@ public class Input extends Main.Helper
 			return previousPressed;
 		}
 
-		public void updateButton()
+		public void updateButton(Input input)
 		{
-//TODO
+			boolean isPressed = allButtonToAccessor.get(button).apply(input.getGamepad(source));
 
-
+			previousPressed = isCurrentPressed();
+			currentPressed = isPressed;
 		}
 	}
 
