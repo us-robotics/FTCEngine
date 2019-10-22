@@ -43,6 +43,8 @@ public class CollectionHelper
 	 */
 	public static <T> int binarySearch(List<T> list, PriorityExtractor<T> elementExtractor, int keyPriority)
 	{
+		if (list.size() == 0) return ~0;
+
 		int minIndex = 0;
 		int maxIndex = list.size() - 1;
 
