@@ -1,10 +1,8 @@
 package FTCEngine.Core;
 
-import java.util.concurrent.TimeUnit;
-
-public class Time extends Main.Helper
+public class Time extends OpModeBase.Helper
 {
-	public Time(Main main)
+	public Time(OpModeBase main)
 	{
 		super(main);
 	}

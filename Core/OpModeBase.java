@@ -10,9 +10,9 @@ import java.util.Map;
 import FTCEngine.Experimental.Action;
 import FTCEngine.Helpers.CollectionHelper;
 
-public abstract class Main extends OpMode
+public abstract class OpModeBase extends OpMode
 {
-	public Main()
+	public OpModeBase()
 	{
 		//Create all allHelpers
 		allHelpers = new HashMap<Class, Helper>();
@@ -66,7 +66,7 @@ public abstract class Main extends OpMode
 	}
 
 	@Override
-	public final void init()
+	public void init()
 	{
 		//Fetch/create all behaviors
 		ArrayList<Behavior> behaviors = new ArrayList<>();
@@ -106,7 +106,7 @@ public abstract class Main extends OpMode
 	}
 
 	@Override
-	public final void start()
+	public void start()
 	{
 		super.start();
 
@@ -124,7 +124,7 @@ public abstract class Main extends OpMode
 	}
 
 	@Override
-	public final void loop()
+	public void loop()
 	{
 		currentPhase = OpModePhase.LOOP;
 		for (Map.Entry<Class, Helper> entry : allHelpers.entrySet()) entry.getValue().beforeLoop();
@@ -142,7 +142,7 @@ public abstract class Main extends OpMode
 
 
 	@Override
-	public final void stop()
+	public void stop()
 	{
 		super.stop();
 
@@ -162,16 +162,16 @@ public abstract class Main extends OpMode
 
 	/**
 	 * A class which should only be extended by the engine to create other helper classes
-	 * NOTE: The event methods are invoked by the Main class, during the time of the event
+	 * NOTE: The event methods are invoked by the OpModeBase class, during the time of the event
 	 */
 	static class Helper
 	{
-		public Helper(Main opMode)
+		public Helper(OpModeBase opMode)
 		{
 			this.opMode = opMode;
 		}
 
-		protected final Main opMode;
+		protected final OpModeBase opMode;
 
 		public void beforeInit() {}
 

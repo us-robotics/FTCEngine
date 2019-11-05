@@ -1,11 +1,11 @@
 package FTCEngine.Core.Auto;
 
 import FTCEngine.Core.Behavior;
-import FTCEngine.Core.Main;
+import FTCEngine.Core.OpModeBase;
 
-public abstract class AutoBehavior extends Behavior
+public abstract class AutoBehavior<E> extends Behavior
 {
-	public AutoBehavior(Main opMode)
+	public AutoBehavior(OpModeBase opMode)
 	{
 		super(opMode);
 	}
@@ -30,4 +30,6 @@ public abstract class AutoBehavior extends Behavior
 	 * @return Did the robot finish its procedure on this behavior?
 	 */
 	protected abstract boolean updateProcedure();
+
+	public abstract void receiveParameter(E parameter);
 }

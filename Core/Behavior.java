@@ -10,7 +10,7 @@ public abstract class Behavior
 	/**
 	 * NOTE: Do not configure the electronics in the constructor, do them in the awake method!
 	 */
-	public Behavior(Main opMode)
+	public Behavior(OpModeBase opMode)
 	{
 		this.opMode = opMode;
 
@@ -19,7 +19,7 @@ public abstract class Behavior
 		telemetry = opMode.getHelper(Telemetry.class);
 	}
 
-	protected final Main opMode;
+	protected final OpModeBase opMode;
 
 	protected final Time time;
 	protected final Input input;

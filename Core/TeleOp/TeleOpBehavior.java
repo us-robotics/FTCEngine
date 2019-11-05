@@ -1,11 +1,11 @@
 package FTCEngine.Core.TeleOp;
 
 import FTCEngine.Core.Behavior;
-import FTCEngine.Core.Main;
+import FTCEngine.Core.OpModeBase;
 
-public class TeleOpBehavior extends Behavior
+public abstract class TeleOpBehavior extends Behavior
 {
-	public TeleOpBehavior(Main opMode)
+	public TeleOpBehavior(OpModeBase opMode)
 	{
 		super(opMode);
 	}

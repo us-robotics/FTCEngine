@@ -3,16 +3,15 @@ package FTCEngine.Core;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 
 import FTCEngine.Experimental.Func;
 import FTCEngine.Helpers.CollectionHelper;
 import FTCEngine.Math.Vector2;
 
-public class Input extends Main.Helper
+public class Input extends OpModeBase.Helper
 {
-	public Input(Main opMode)
+	public Input(OpModeBase opMode)
 	{
 		super(opMode);
 	}
