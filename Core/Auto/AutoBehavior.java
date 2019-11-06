@@ -3,33 +3,44 @@ package FTCEngine.Core.Auto;
 import FTCEngine.Core.Behavior;
 import FTCEngine.Core.OpModeBase;
 
-public abstract class AutoBehavior<E> extends Behavior
+public abstract class AutoBehavior<TJob extends Job> extends Behavior
 {
 	public AutoBehavior(OpModeBase opMode)
 	{
 		super(opMode);
 	}
 
-	Procedure currentProcedure;
+	private TJob currentJob;
 
-	protected final Procedure getCurrentProcedure()
+	protected final TJob getCurrentJob()
 	{
-		return currentProcedure;
-	}
-
-	@Override
-	public final void update()
-	{
-		super.update();
-
-
+		return currentJob;
 	}
 
 	/**
-	 * Updates the robot with its procedure
-	 * @return Did the robot finish its procedure on this behavior?
+	 * This method should/will not be used outside of the engine,
+	 * that is why it is not public
 	 */
-	protected abstract boolean updateProcedure();
+	void setCurrentJob(TJob currentJob)
+	{
+		this.currentJob = currentJob;
+	}
 
-	public abstract void receiveParameter(E parameter);
+	@Override
+	public void update()
+	{
+		super.update();
+		if (getCurrentJob() != null && !getCurrentJob().getIsDone()) updateJob();
+	}
+
+	/**
+	 * This method will get invoked when a job is added to this behavior
+	 * (so when getCurrentJob turns from null to not null)
+	 */
+	public void onJobAdded() {}
+
+	/**
+	 * Updates the robot with the requested jobs
+	 */
+	protected abstract void updateJob();
 }

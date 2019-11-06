@@ -10,11 +10,17 @@ public class Time extends OpModeBase.Helper
 	private long initialTime;
 	private long previousTime;
 
+	/**
+	 * @return the delta time from the previous frame to this frame in seconds
+	 */
 	public float getDeltaTime()
 	{
 		return nanoToSec(System.nanoTime() - previousTime);
 	}
 
+	/**
+	 * @return time in seconds
+	 */
 	public float getTime()
 	{
 		return nanoToSec(System.nanoTime() - initialTime);
