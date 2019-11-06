@@ -11,7 +11,7 @@ public abstract class Job
 
 	public void finishJob()
 	{
-		if (getIsDone()) throw new IllegalStateException("Job is already finished!");
+		if (getIsDone()) throw new IllegalStateException("AutoJob is already finished!");
 		isDone = true;
 	}
 }
