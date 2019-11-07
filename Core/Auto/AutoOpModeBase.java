@@ -9,10 +9,10 @@ public abstract class AutoOpModeBase extends OpModeBase
 {
 	boolean isQueueingJobs;
 
-	ArrayList<BehaviorJob<?>> jobs = new ArrayList<BehaviorJob<?>>();
-	int currentJobIndex;
+	private ArrayList<BehaviorJob<?>> jobs = new ArrayList<BehaviorJob<?>>();
+	private int currentJobIndex;
 
-	static final BehaviorJob<?> executeJobAction = new BehaviorJob<>(null, null);
+	private static final BehaviorJob<?> executeJobAction = new BehaviorJob<>(null, null);
 
 	@Override
 	public void start()
@@ -39,11 +39,13 @@ public abstract class AutoOpModeBase extends OpModeBase
 
 		while (jobs.get(current) != executeJobAction)
 		{
-			allJobsFinished &= !jobs.get(current).updateJob();
+			allJobsFinished &= jobs.get(current).updateJob();
+			telemetry.addData("Current running job: ",jobs.get(current).toString());
+
 			current++;
 		}
 
-		if (allJobsFinished) currentJobIndex = current + 1;
+		if (allJobsFinished) currentJobIndex = current+1;
 	}
 
 	protected <TBehavior extends AutoBehavior<TJob>, TJob extends Job> void execute(TBehavior behavior, TJob job)
@@ -98,31 +100,37 @@ public abstract class AutoOpModeBase extends OpModeBase
 
 		protected void startJob()
 		{
+			behavior.setCurrentJob(job);
 			behavior.onJobAdded();
 		}
 
 		protected void checkStartJob()
 		{
 			if (!firstTimeExecutingJob) return;
-
 			firstTimeExecutingJob = false;
+
 			startJob();
 		}
 
 		/**
 		 * This method will be invoked after the main update method if this BehaviorJob is currently executing
 		 * (or if other behavior jobs executing parallel to this job is executing)
-		 * NOTE: Returns true if the job is still executing, or false if the job is already done
+		 * NOTE: Returns false if the job is still executing, or true if the job is already done
 		 */
 		public boolean updateJob()
 		{
 			checkStartJob();
 
-			if (behavior.getCurrentJob() == null) return false;
+			if (behavior.getCurrentJob() == null) return true;
 			if (behavior.getCurrentJob() != job) throw new InternalError("Internal engine error! This update method should not be invoked when behvaior has a different job!");
 
 			if (job.getIsDone()) behavior.setCurrentJob(null);
 			return job.getIsDone();
+		}
+
+		@Override
+		public String toString() {
+			return job.toString();
 		}
 	}
 
@@ -152,6 +160,11 @@ public abstract class AutoOpModeBase extends OpModeBase
 		{
 			checkStartJob();
 			return time.getTime() - startTime >= second;
+		}
+
+		@Override
+		public String toString() {
+			return "Waiting for " + second + " seconds";
 		}
 	}
 }

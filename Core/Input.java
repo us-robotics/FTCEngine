@@ -95,8 +95,8 @@ public class Input extends OpModeBase.Helper
 
 		switch (joystick)
 		{
-			case LEFT_JOYSTICK: return new Vector2(gamepad.left_stick_x, gamepad.left_stick_y);
-			case RIGHT_JOYSTICK: return new Vector2(gamepad.right_stick_x, gamepad.right_stick_y);
+			case LEFT_JOYSTICK: return new Vector2(gamepad.left_stick_x, -gamepad.left_stick_y);
+			case RIGHT_JOYSTICK: return new Vector2(gamepad.right_stick_x, -gamepad.right_stick_y);
 		}
 
 		throw new IllegalArgumentException("Joystick (" + joystick + ") is illegal");
