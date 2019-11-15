@@ -289,7 +289,7 @@ public class Input extends OpModeBase.Helper
 
 		public static int getPriority(Source source, Button button)
 		{
-			return source.ordinal() * Button.length + button.ordinal();
+			return source.ordinal() * Button.length + 4 + button.ordinal();
 		}
 	}
 }
