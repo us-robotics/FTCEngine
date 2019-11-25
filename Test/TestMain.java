@@ -4,11 +4,6 @@ public class TestMain
 {
 	public static void main(String[] args)
 	{
-//		TestOp op = new TestOp();
-//
-//		op.init();
-//		op.start();
-//
-//		TestBehavior behavior = op.getBehavior(TestBehavior.class);
+		System.out.println(0.5f%0.3f);
 	}
 }

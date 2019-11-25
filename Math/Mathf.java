@@ -93,7 +93,7 @@ public class Mathf
 	 */
 	public static float toSignedAngle(float value)
 	{
-		return repeat(-(value + 180f), 360f) + 180f;
+		return -repeat(value + 180f, 360f) + 180f;
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class Mathf
 	 */
 	public static int toSignedAngle(int value)
 	{
-		return repeat(-(value + 180), 360) + 180;
+		return -repeat(value + 180, 360) + 180;
 	}
 
 	/**
