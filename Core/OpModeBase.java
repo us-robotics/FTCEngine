@@ -34,6 +34,7 @@ public abstract class OpModeBase extends OpMode
 	private final HashMap<Class, Helper> allHelpers;
 
 	private OpModePhase currentPhase = OpModePhase.INVALID;
+	public abstract boolean getIsAuto();
 
 	/**
 	 * This method will be invoked once before init to get all the behaviors we want to run.

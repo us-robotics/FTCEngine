@@ -15,6 +15,11 @@ public abstract class AutoOpModeBase extends OpModeBase
 	private static final BehaviorJob<?> executeJobAction = new BehaviorJob<>(null, null);
 
 	@Override
+	public final boolean getIsAuto() {
+		return true;
+	}
+
+	@Override
 	public void start()
 	{
 		super.start();
