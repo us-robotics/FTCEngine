@@ -34,9 +34,25 @@ public class Mathf
 	/**
 	 * Clamps value to be not lower than min and not higher than max
 	 */
+	public static int clamp(int value, int min, int max)
+	{
+		return Math.min(max, Math.max(min, value));
+	}
+
+	/**
+	 * Clamps value to be not lower than min and not higher than max
+	 */
 	public static float clamp(float value, float min, float max)
 	{
 		return Math.min(max, Math.max(min, value));
+	}
+
+	/**
+	 * Clamps value to be not lower than 0 and not higher than 1
+	 */
+	public static int clamp01(int value)
+	{
+		return clamp(value, 0, 1);
 	}
 
 	/**

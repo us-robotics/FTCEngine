@@ -107,6 +107,16 @@ public abstract class OpModeBase extends OpMode
 	}
 
 	@Override
+	public void init_loop() {
+		super.init_loop();
+
+		currentPhase = OpModePhase.INIT_LOOP;
+		for (Map.Entry<Class, Helper> entry : allHelpers.entrySet()) entry.getValue().initLoop();
+
+		telemetry.update();
+	}
+
+	@Override
 	public void start()
 	{
 		super.start();
@@ -177,6 +187,10 @@ public abstract class OpModeBase extends OpMode
 		public void beforeInit() {}
 
 		public void afterInit() {}
+
+		public void initLoop() {}
+
+		public void afterInitLoop() {}
 
 		public void beforeStart() {}
 

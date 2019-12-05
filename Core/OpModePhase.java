@@ -7,6 +7,7 @@ public enum OpModePhase
 	 */
 	INVALID,
 	INITIALIZE,
+	INIT_LOOP,
 	START,
 	LOOP,
 	STOP

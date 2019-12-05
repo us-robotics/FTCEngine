@@ -2,11 +2,20 @@ package FTCEngine.Core.Auto;
 
 import java.util.ArrayList;
 
+import FTCEngine.Core.Input;
 import FTCEngine.Core.OpModeBase;
 import FTCEngine.Core.Time;
 
 public abstract class AutoOpModeBase extends OpModeBase
 {
+	@Override
+	public final void init() {
+		super.init();
+		awake();
+	}
+
+	protected void awake() {}
+
 	boolean isQueueingJobs;
 
 	private ArrayList<BehaviorJob<?>> jobs = new ArrayList<BehaviorJob<?>>();
@@ -18,6 +27,22 @@ public abstract class AutoOpModeBase extends OpModeBase
 	public final boolean getIsAuto() {
 		return true;
 	}
+
+	protected Input getInput() {
+		return getHelper(Input.class);
+	}
+
+//	protected Time getTime() {
+//		return getHelper(Time.class);
+//	}
+
+	@Override
+	public final void init_loop() {
+		super.init_loop();
+		configLoop();
+	}
+
+	protected void configLoop() {}
 
 	@Override
 	public void start()

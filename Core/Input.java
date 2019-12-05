@@ -113,10 +113,19 @@ public class Input extends OpModeBase.Helper
 	}
 
 	@Override
+	public void initLoop() {
+		super.initLoop();
+		updateAll();
+	}
+
+	@Override
 	public void beforeLoop()
 	{
 		super.beforeLoop();
+		updateAll();
+	}
 
+	private void updateAll() {
 		for (int i = 0; i < registeredButtons.size(); i++)
 		{
 			registeredButtons.get(i).updateButton(this);
@@ -125,7 +134,8 @@ public class Input extends OpModeBase.Helper
 
 	private void checkPhase()
 	{
-		if (opMode.getPhase() != OpModePhase.LOOP) throw new IllegalStateException("Cannot access input outside of the core loop!");
+		if (opMode.getPhase() == OpModePhase.LOOP || opMode.getPhase() == OpModePhase.INIT_LOOP) return;
+		throw new IllegalStateException("Cannot access input outside of the core loop!");
 	}
 
 	public enum Button
