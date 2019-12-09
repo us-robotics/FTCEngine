@@ -14,7 +14,9 @@ public abstract class AutoOpModeBase extends OpModeBase
 		awake();
 	}
 
-	protected void awake() {}
+	protected void awake() {
+		getInput().registerButton(Input.Source.CONTROLLER_1, Input.Button.RIGHT_BUMPER);
+	}
 
 	boolean isQueueingJobs;
 
@@ -23,10 +25,13 @@ public abstract class AutoOpModeBase extends OpModeBase
 
 	private static final BehaviorJob<?> executeJobAction = new BehaviorJob<>(null, null);
 
+	private boolean isBlue = true;
+
 	@Override
 	public final boolean getIsAuto() {
 		return true;
 	}
+	public boolean getIsBlue() {return isBlue;}
 
 	protected Input getInput() {
 		return getHelper(Input.class);
@@ -42,7 +47,10 @@ public abstract class AutoOpModeBase extends OpModeBase
 		configLoop();
 	}
 
-	protected void configLoop() {}
+	protected void configLoop() {
+		if (getInput().getButtonDown(Input.Source.CONTROLLER_1, Input.Button.RIGHT_BUMPER)) isBlue = !isBlue;
+		telemetry.addData("Side (RBumper)", isBlue? "blue":"red");
+	}
 
 	@Override
 	public void start()
@@ -87,6 +95,8 @@ public abstract class AutoOpModeBase extends OpModeBase
 	protected <TBehavior extends AutoBehavior<TJob>, TJob extends Job> void buffer(TBehavior behavior, TJob job)
 	{
 		checkQueueState();
+
+		if (!getIsBlue()) job.reverse();
 		jobs.add(new BehaviorJob<TJob>(behavior, job));
 	}
 
