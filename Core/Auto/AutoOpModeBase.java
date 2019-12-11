@@ -78,7 +78,8 @@ public abstract class AutoOpModeBase extends OpModeBase
 		while (jobs.get(current) != executeJobAction)
 		{
 			allJobsFinished &= jobs.get(current).updateJob();
-			telemetry.addData("Current running job: ",jobs.get(current).toString());
+
+			telemetry.addData(jobs.get(current).job == null? "Ran:" :"Running: ",jobs.get(current).toString());
 
 			current++;
 		}
