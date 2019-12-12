@@ -9,12 +9,14 @@ import FTCEngine.Core.Time;
 public abstract class AutoOpModeBase extends OpModeBase
 {
 	@Override
-	public final void init() {
+	public final void init()
+	{
 		super.init();
 		awake();
 	}
 
-	protected void awake() {
+	protected void awake()
+	{
 		getInput().registerButton(Input.Source.CONTROLLER_1, Input.Button.RIGHT_BUMPER);
 	}
 
@@ -26,14 +28,17 @@ public abstract class AutoOpModeBase extends OpModeBase
 	private static final BehaviorJob<?> executeJobAction = new BehaviorJob<>(null, null);
 
 	private boolean isBlue = true;
+	private boolean overrideReverse;
 
 	@Override
-	public final boolean getIsAuto() {
+	public final boolean getIsAuto()
+	{
 		return true;
 	}
 	public boolean getIsBlue() {return isBlue;}
 
-	protected Input getInput() {
+	protected Input getInput()
+	{
 		return getHelper(Input.class);
 	}
 
@@ -42,14 +47,16 @@ public abstract class AutoOpModeBase extends OpModeBase
 //	}
 
 	@Override
-	public final void init_loop() {
+	public final void init_loop()
+	{
 		super.init_loop();
 		configLoop();
 	}
 
-	protected void configLoop() {
+	protected void configLoop()
+	{
 		if (getInput().getButtonDown(Input.Source.CONTROLLER_1, Input.Button.RIGHT_BUMPER)) isBlue = !isBlue;
-		telemetry.addData("Side (RBumper)", isBlue? "blue":"red");
+		telemetry.addData("Side (RBumper)", isBlue ? "blue" : "red");
 	}
 
 	@Override
@@ -78,13 +85,12 @@ public abstract class AutoOpModeBase extends OpModeBase
 		while (jobs.get(current) != executeJobAction)
 		{
 			allJobsFinished &= jobs.get(current).updateJob();
-
-			telemetry.addData(jobs.get(current).job == null? "Ran:" :"Running: ",jobs.get(current).toString());
+			telemetry.addData(jobs.get(current).job == null ? "Ran:" : "Running: ", jobs.get(current).toString());
 
 			current++;
 		}
 
-		if (allJobsFinished) currentJobIndex = current+1;
+		if (allJobsFinished) currentJobIndex = current + 1;
 	}
 
 	protected <TBehavior extends AutoBehavior<TJob>, TJob extends Job> void execute(TBehavior behavior, TJob job)
@@ -97,7 +103,7 @@ public abstract class AutoOpModeBase extends OpModeBase
 	{
 		checkQueueState();
 
-		if (!getIsBlue()) job.reverse();
+		if (!getIsBlue() && !overrideReverse) job.reverse();
 		jobs.add(new BehaviorJob<TJob>(behavior, job));
 	}
 
@@ -125,6 +131,9 @@ public abstract class AutoOpModeBase extends OpModeBase
 	{
 		if (!isQueueingJobs) throw new IllegalStateException("Invalid time for queueing jobs");
 	}
+
+	private void startOverrideReverse() {overrideReverse = true;}
+	private void endOverrideReverse() {overrideReverse = false;}
 
 	static class BehaviorJob<TJob extends Job>
 	{
@@ -170,7 +179,8 @@ public abstract class AutoOpModeBase extends OpModeBase
 		}
 
 		@Override
-		public String toString() {
+		public String toString()
+		{
 			return job.toString();
 		}
 	}
@@ -204,7 +214,8 @@ public abstract class AutoOpModeBase extends OpModeBase
 		}
 
 		@Override
-		public String toString() {
+		public String toString()
+		{
 			return "Waiting for " + second + " seconds";
 		}
 	}
