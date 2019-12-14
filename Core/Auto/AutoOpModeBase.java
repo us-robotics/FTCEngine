@@ -37,6 +37,8 @@ public abstract class AutoOpModeBase extends OpModeBase
 	}
 	public boolean getIsBlue() {return isBlue;}
 
+	public void setIsBlue(boolean isBlue) {this.isBlue = isBlue;}
+
 	protected Input getInput()
 	{
 		return getHelper(Input.class);
