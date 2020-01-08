@@ -13,6 +13,7 @@ public abstract class AutoOpModeBase extends OpModeBase
 	{
 		super.init();
 		awake();
+		msStuckDetectStop = 3000;
 	}
 
 	protected void awake()
@@ -132,8 +133,8 @@ public abstract class AutoOpModeBase extends OpModeBase
 		if (!isQueueingJobs) throw new IllegalStateException("Invalid time for queueing jobs");
 	}
 
-	private void startOverrideReverse() {overrideReverse = true;}
-	private void endOverrideReverse() {overrideReverse = false;}
+	protected void startOverrideReverse() {overrideReverse = true;}
+	protected void endOverrideReverse() {overrideReverse = false;}
 
 	static class BehaviorJob<TJob extends Job>
 	{
