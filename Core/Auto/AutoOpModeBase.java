@@ -1,6 +1,8 @@
 package FTCEngine.Core.Auto;
 
+import java.io.Console;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import FTCEngine.Core.Input;
 import FTCEngine.Core.OpModeBase;
@@ -70,6 +72,8 @@ public abstract class AutoOpModeBase extends OpModeBase
 		isQueueingJobs = false;
 
 		if (jobs.get(jobs.size() - 1) != executeJobAction) throw new InternalError("Internal engine error! No execute action was appended to the end of the job list!");
+
+		System.out.println(Arrays.toString(jobs.toArray()));
 	}
 
 	protected abstract void queueJobs();
@@ -182,7 +186,7 @@ public abstract class AutoOpModeBase extends OpModeBase
 		@Override
 		public String toString()
 		{
-			return job.toString();
+			return job == null ? "_NULL_" : job.toString();
 		}
 	}
 
