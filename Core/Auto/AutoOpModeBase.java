@@ -15,7 +15,6 @@ public abstract class AutoOpModeBase extends OpModeBase
 	{
 		super.init();
 		awake();
-		msStuckDetectStop = 3000;
 	}
 
 	protected void awake()
