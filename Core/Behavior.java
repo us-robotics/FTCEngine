@@ -27,7 +27,8 @@ public abstract class Behavior
 	protected final Input input;
 	protected final Telemetry telemetry;
 
-	protected boolean getIsAuto() {
+	protected boolean getIsAuto()
+	{
 		return opMode instanceof AutoOpModeBase;
 	}
 
@@ -35,20 +36,28 @@ public abstract class Behavior
 	 * This method will get invoked one time between the init button and the play button
 	 * Should mostly be used to INITIALIZE the electronics
 	 */
-	public void awake(HardwareMap hardwareMap) {}
+	public void awake(HardwareMap hardwareMap)
+	{
+	}
 
 	/**
 	 * This method will get invoked once when the driver pressed the play button
 	 */
-	public void start() {}
+	public void start()
+	{
+	}
 
 	/**
 	 * This method get continuously invoked when in play mode
 	 */
-	public void update() {}
+	public void update()
+	{
+	}
 
 	/**
 	 * This method will get invoked when the driver pressed the STOP button
 	 */
-	public void stop() {}
+	public void stop()
+	{
+	}
 }
