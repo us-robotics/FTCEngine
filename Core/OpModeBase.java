@@ -7,34 +7,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import FTCEngine.Experimental.Action;
+import FTCEngine.Core.Auto.AutoOpModeBase;
+import FTCEngine.Delegates.Action;
 import FTCEngine.Helpers.CollectionHelper;
 
 public abstract class OpModeBase extends OpMode
 {
 	public OpModeBase()
 	{
-		//Create all allHelpers
-		allHelpers = new HashMap<Class, Helper>();
-		Action<Helper> assignHelper = new Action<Helper>()
-		{
-			@Override
-			public void accept(Helper helper)
-			{
-				allHelpers.put(helper.getClass(), helper);
-			}
-		};
+		//Create all helpers
+		allHelpers = new HashMap<Class<?>, Helper>();
 
-		assignHelper.accept(new Time(this));
-		assignHelper.accept(new Input(this));
-		assignHelper.accept(new Telemetry(this));
+		allHelpers.put(Time.class, new Time(this));
+		allHelpers.put(Input.class, new Input(this));
+		allHelpers.put(Telemetry.class, new Telemetry(this));
 	}
 
 	private List<Behavior> allBehaviors; //Semi-readonly, sorted by class object hashcode for binary search
-	private final HashMap<Class, Helper> allHelpers;
+	private final HashMap<Class<?>, Helper> allHelpers;
 
 	private OpModePhase currentPhase = OpModePhase.INVALID;
-	public abstract boolean getIsAuto();
+
+	public boolean getIsAuto()
+	{
+		return this instanceof AutoOpModeBase;
+	}
 
 	/**
 	 * This method will be invoked once before init to get all the behaviors we want to run.
@@ -53,7 +50,7 @@ public abstract class OpModeBase extends OpMode
 	public <T extends Helper> T getHelper(Class<T> helperClass)
 	{
 		Helper result = allHelpers.get(helperClass);
-		return helperClass.isInstance(result) ? (T)result : null;
+		return helperClass.isInstance(result) ? (T) result : null;
 	}
 
 	/**
@@ -63,7 +60,7 @@ public abstract class OpModeBase extends OpMode
 	public <T extends Behavior> T getBehavior(Class<T> behaviorClass)
 	{
 		int index = CollectionHelper.binarySearch(allBehaviors, PriorityExtractor.behaviorExtractor, behaviorClass, PriorityExtractor.classExtractor);
-		return index < 0 ? null : (T)allBehaviors.get(index);
+		return index < 0 ? null : (T) allBehaviors.get(index);
 	}
 
 	@Override
@@ -77,7 +74,7 @@ public abstract class OpModeBase extends OpMode
 
 		//Initialize internal op mode
 		currentPhase = OpModePhase.INITIALIZE;
-		for (Map.Entry<Class, Helper> entry : allHelpers.entrySet()) entry.getValue().beforeInit();
+		for (Helper helper : allHelpers.values()) helper.beforeInit();
 
 		//Awake all behaviors
 		for (int i = 0; i < allBehaviors.size(); i++)
@@ -87,7 +84,7 @@ public abstract class OpModeBase extends OpMode
 
 		telemetry.update();
 
-		for (Map.Entry<Class, Helper> entry : allHelpers.entrySet()) entry.getValue().afterInit();
+		for (Helper helper : allHelpers.values()) helper.afterInit();
 	}
 
 	private static List<Behavior> initializeBehaviors(ArrayList<Behavior> source)
@@ -107,11 +104,12 @@ public abstract class OpModeBase extends OpMode
 	}
 
 	@Override
-	public void init_loop() {
+	public void init_loop()
+	{
 		super.init_loop();
 
 		currentPhase = OpModePhase.INIT_LOOP;
-		for (Map.Entry<Class, Helper> entry : allHelpers.entrySet()) entry.getValue().initLoop();
+		for (Helper helper : allHelpers.values()) helper.initLoop();
 
 		telemetry.update();
 	}
@@ -122,7 +120,7 @@ public abstract class OpModeBase extends OpMode
 		super.start();
 
 		currentPhase = OpModePhase.START;
-		for (Map.Entry<Class, Helper> entry : allHelpers.entrySet()) entry.getValue().beforeStart();
+		for (Helper helper : allHelpers.values()) helper.beforeStart();
 
 		for (int i = 0; i < allBehaviors.size(); i++)
 		{
@@ -131,24 +129,24 @@ public abstract class OpModeBase extends OpMode
 
 		telemetry.update();
 
-		for (Map.Entry<Class, Helper> entry : allHelpers.entrySet()) entry.getValue().afterStart();
+		for (Helper helper : allHelpers.values()) helper.afterStart();
 	}
 
 	@Override
 	public void loop()
 	{
 		currentPhase = OpModePhase.LOOP;
-		for (Map.Entry<Class, Helper> entry : allHelpers.entrySet()) entry.getValue().beforeLoop();
+		for (Helper helper : allHelpers.values()) helper.beforeLoop();
 
+		//Main loop
 		for (int i = 0; i < allBehaviors.size(); i++)
 		{
 			allBehaviors.get(i).update();
 		}
 
-//		telemetry.addData("", Debug.getLogged(5));
 		telemetry.update();
 
-		for (Map.Entry<Class, Helper> entry : allHelpers.entrySet()) entry.getValue().afterLoop();
+		for (Helper helper : allHelpers.values()) helper.afterLoop();
 	}
 
 
@@ -158,7 +156,7 @@ public abstract class OpModeBase extends OpMode
 		super.stop();
 
 		currentPhase = OpModePhase.STOP;
-		for (Map.Entry<Class, Helper> entry : allHelpers.entrySet()) entry.getValue().beforeStop();
+		for (Helper helper : allHelpers.values()) helper.beforeStop();
 
 		for (int i = 0; i < allBehaviors.size(); i++)
 		{
@@ -167,7 +165,7 @@ public abstract class OpModeBase extends OpMode
 
 		telemetry.update();
 
-		for (Map.Entry<Class, Helper> entry : allHelpers.entrySet()) entry.getValue().afterStop();
+		for (Helper helper : allHelpers.values()) helper.afterStop();
 		currentPhase = OpModePhase.INVALID;
 	}
 
@@ -184,25 +182,45 @@ public abstract class OpModeBase extends OpMode
 
 		protected final OpModeBase opMode;
 
-		public void beforeInit() {}
+		public void beforeInit()
+		{
+		}
 
-		public void afterInit() {}
+		public void afterInit()
+		{
+		}
 
-		public void initLoop() {}
+		public void initLoop()
+		{
+		}
 
-		public void afterInitLoop() {}
+		public void afterInitLoop()
+		{
+		}
 
-		public void beforeStart() {}
+		public void beforeStart()
+		{
+		}
 
-		public void afterStart() {}
+		public void afterStart()
+		{
+		}
 
-		public void beforeLoop() {}
+		public void beforeLoop()
+		{
+		}
 
-		public void afterLoop() {}
+		public void afterLoop()
+		{
+		}
 
-		public void beforeStop() {}
+		public void beforeStop()
+		{
+		}
 
-		public void afterStop() {}
+		public void afterStop()
+		{
+		}
 	}
 
 	private static class PriorityExtractor

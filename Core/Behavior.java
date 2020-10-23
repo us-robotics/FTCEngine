@@ -15,17 +15,9 @@ public abstract class Behavior
 	public Behavior(OpModeBase opMode)
 	{
 		this.opMode = opMode;
-
-		time = opMode.getHelper(Time.class);
-		input = opMode.getHelper(Input.class);
-		telemetry = opMode.getHelper(Telemetry.class);
 	}
 
 	protected final OpModeBase opMode;
-
-	protected final Time time;
-	protected final Input input;
-	protected final Telemetry telemetry;
 
 	protected boolean getIsAuto()
 	{

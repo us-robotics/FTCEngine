@@ -1,4 +1,4 @@
-package FTCEngine.Experimental;
+package FTCEngine.Delegates;
 
 /**
  * An implementation of Java's Consumer interface or C#'s Action delegate

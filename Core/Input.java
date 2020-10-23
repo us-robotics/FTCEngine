@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import FTCEngine.Experimental.Func;
+import FTCEngine.Delegates.Func;
 import FTCEngine.Helpers.CollectionHelper;
 import FTCEngine.Math.Vector2;
 
@@ -16,7 +16,7 @@ public class Input extends OpModeBase.Helper
 		super(opMode);
 	}
 
-	private ArrayList<ButtonState> registeredButtons = new ArrayList<ButtonState>();
+	private final ArrayList<ButtonState> registeredButtons = new ArrayList<ButtonState>();
 
 	/**
 	 * Tell the input that the program is going to use this button
@@ -45,8 +45,10 @@ public class Input extends OpModeBase.Helper
 	{
 		switch (source)
 		{
-			case CONTROLLER_1: return opMode.gamepad1;
-			case CONTROLLER_2: return opMode.gamepad2;
+			case CONTROLLER_1:
+				return opMode.gamepad1;
+			case CONTROLLER_2:
+				return opMode.gamepad2;
 		}
 
 		throw new IllegalArgumentException("Source (" + source + ") is an illegal source for gamepad");
@@ -81,8 +83,10 @@ public class Input extends OpModeBase.Helper
 
 		switch (trigger)
 		{
-			case LEFT_TRIGGER: return gamepad.left_trigger;
-			case RIGHT_TRIGGER: return gamepad.right_trigger;
+			case LEFT_TRIGGER:
+				return gamepad.left_trigger;
+			case RIGHT_TRIGGER:
+				return gamepad.right_trigger;
 		}
 
 		throw new IllegalArgumentException("Trigger (" + trigger + ") is illegal");
@@ -95,8 +99,10 @@ public class Input extends OpModeBase.Helper
 
 		switch (joystick)
 		{
-			case LEFT_JOYSTICK: return new Vector2(gamepad.left_stick_x, -gamepad.left_stick_y);
-			case RIGHT_JOYSTICK: return new Vector2(gamepad.right_stick_x, -gamepad.right_stick_y);
+			case LEFT_JOYSTICK:
+				return new Vector2(gamepad.left_stick_x, -gamepad.left_stick_y);
+			case RIGHT_JOYSTICK:
+				return new Vector2(gamepad.right_stick_x, -gamepad.right_stick_y);
 		}
 
 		throw new IllegalArgumentException("Joystick (" + joystick + ") is illegal");
@@ -113,7 +119,8 @@ public class Input extends OpModeBase.Helper
 	}
 
 	@Override
-	public void initLoop() {
+	public void initLoop()
+	{
 		super.initLoop();
 		updateAll();
 	}
@@ -125,7 +132,8 @@ public class Input extends OpModeBase.Helper
 		updateAll();
 	}
 
-	private void updateAll() {
+	private void updateAll()
+	{
 		for (int i = 0; i < registeredButtons.size(); i++)
 		{
 			registeredButtons.get(i).updateButton(this);
@@ -192,6 +200,7 @@ public class Input extends OpModeBase.Helper
 		{
 			return currentPressed;
 		}
+
 		public boolean isPreviousPressed()
 		{
 			return previousPressed;
@@ -211,79 +220,118 @@ public class Input extends OpModeBase.Helper
 		put(Button.A, new Func<Gamepad, Boolean>()
 		{
 			@Override
-			public Boolean apply(Gamepad input) {return input.a;}
+			public Boolean apply(Gamepad input)
+			{
+				return input.a;
+			}
 		});
 
 		put(Button.B, new Func<Gamepad, Boolean>()
 		{
 			@Override
-			public Boolean apply(Gamepad input) {return input.b;}
+			public Boolean apply(Gamepad input)
+			{
+				return input.b;
+			}
 		});
 
 		put(Button.X, new Func<Gamepad, Boolean>()
 		{
 			@Override
-			public Boolean apply(Gamepad input) {return input.x;}
+			public Boolean apply(Gamepad input)
+			{
+				return input.x;
+			}
 		});
 
 		put(Button.Y, new Func<Gamepad, Boolean>()
 		{
 			@Override
-			public Boolean apply(Gamepad input) {return input.y;}
+			public Boolean apply(Gamepad input)
+			{
+				return input.y;
+			}
 		});
 
 		put(Button.START, new Func<Gamepad, Boolean>()
 		{
 			@Override
-			public Boolean apply(Gamepad input) {return input.start;}
+			public Boolean apply(Gamepad input)
+			{
+				return input.start;
+			}
 		});
 
 		put(Button.BACK, new Func<Gamepad, Boolean>()
 		{
 			@Override
-			public Boolean apply(Gamepad input) {return input.back;}
+			public Boolean apply(Gamepad input)
+			{
+				return input.back;
+			}
 		});
 
 		put(Button.GUIDE, new Func<Gamepad, Boolean>()
 		{
 			@Override
-			public Boolean apply(Gamepad input) {return input.guide;}
+			public Boolean apply(Gamepad input)
+			{
+				return input.guide;
+			}
 		});
 
 		put(Button.DPAD_RIGHT, new Func<Gamepad, Boolean>()
 		{
 			@Override
-			public Boolean apply(Gamepad input) {return input.dpad_right;}
+			public Boolean apply(Gamepad input)
+			{
+				return input.dpad_right;
+			}
 		});
 
 		put(Button.DPAD_LEFT, new Func<Gamepad, Boolean>()
 		{
 			@Override
-			public Boolean apply(Gamepad input) {return input.dpad_left;}
+			public Boolean apply(Gamepad input)
+			{
+				return input.dpad_left;
+			}
 		});
 
 		put(Button.DPAD_UP, new Func<Gamepad, Boolean>()
 		{
 			@Override
-			public Boolean apply(Gamepad input) {return input.dpad_up;}
+			public Boolean apply(Gamepad input)
+			{
+				return input.dpad_up;
+			}
 		});
 
 		put(Button.DPAD_DOWN, new Func<Gamepad, Boolean>()
 		{
 			@Override
-			public Boolean apply(Gamepad input) {return input.dpad_down;}
+			public Boolean apply(Gamepad input)
+			{
+				return input.dpad_down;
+			}
 		});
 
 		put(Button.LEFT_BUMPER, new Func<Gamepad, Boolean>()
 		{
 			@Override
-			public Boolean apply(Gamepad input) {return input.left_bumper;}
+			public Boolean apply(Gamepad input)
+			{
+				return input.left_bumper;
+			}
 		});
 
 		put(Button.RIGHT_BUMPER, new Func<Gamepad, Boolean>()
 		{
 			@Override
-			public Boolean apply(Gamepad input) {return input.right_bumper;}
+			public Boolean apply(Gamepad input)
+			{
+				return input.right_bumper;
+			}
 		});
 	}};
 
