@@ -82,6 +82,13 @@ public final class Vector2
 		return sub(pivot).rotate(angle).add(pivot);
 	}
 
+	public Vector2 clampMagnitude(float min, float max)
+	{
+		float magnitude = getMagnitude();
+		float clamped = Mathf.clamp(magnitude, min, max);
+		return mul(clamped / magnitude);
+	}
+
 	/**
 	 * Returns an element based on index, x = 0, y = 1
 	 */
