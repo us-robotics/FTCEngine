@@ -85,6 +85,8 @@ public final class Vector2
 	public Vector2 clampMagnitude(float min, float max)
 	{
 		float magnitude = getMagnitude();
+		if (Mathf.almostEquals(magnitude, 0f)) return zero;
+
 		float clamped = Mathf.clamp(magnitude, min, max);
 		return mul(clamped / magnitude);
 	}

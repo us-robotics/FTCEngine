@@ -37,7 +37,8 @@ public abstract class AutoOpModeBase extends OpModeBase
 			}
 		}
 
-		configOptions = (ConfigOption[]) options.toArray();
+		configOptions = new ConfigOption[options.size()];
+		options.toArray(configOptions);
 	}
 
 	protected void appendConfigOptions(List<ConfigOption> options)
