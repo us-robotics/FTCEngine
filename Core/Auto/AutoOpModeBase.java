@@ -183,7 +183,6 @@ public abstract class AutoOpModeBase extends OpModeBase
 		addExecuteAction();
 	}
 
-
 	protected <TBehavior extends AutoBehavior<TJob>, TJob extends Job> void buffer(TBehavior behavior, TJob job)
 	{
 		buffer(behavior, job, false);
@@ -234,7 +233,7 @@ public abstract class AutoOpModeBase extends OpModeBase
 		public final AutoBehavior<TJob> behavior;
 		public final TJob job;
 
-		private boolean jobStarted = true;
+		private boolean jobStarted;
 
 		/**
 		 * Invoked once when the job starts.
@@ -265,14 +264,19 @@ public abstract class AutoOpModeBase extends OpModeBase
 			if (behavior.getCurrentJob() == null) return true;
 			if (behavior.getCurrentJob() != job) throw new InternalError("Internal engine error! This update method should not be invoked when behvaior has a different job!");
 
-			if (job.getIsDone()) behavior.setCurrentJob(null);
-			return job.getIsDone();
+			if (job.getIsDone())
+			{
+				behavior.setCurrentJob(null);
+				return true;
+			}
+
+			return false;
 		}
 
 		@Override
 		public String toString()
 		{
-			return job == null ? "_NULL_" : job.toString();
+			return job == null ? "NO_JOB" : job.toString();
 		}
 	}
 
