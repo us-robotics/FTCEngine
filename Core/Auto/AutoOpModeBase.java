@@ -172,23 +172,23 @@ public abstract class AutoOpModeBase extends OpModeBase
 		telemetry.update();
 	}
 
-	protected <TBehavior extends AutoBehavior<TJob>, TJob extends Job> void execute(TBehavior behavior, TJob job)
+	protected <TBehavior extends AutoBehavior<TJob>, TJob extends Job, TJobIn extends TJob> void execute(TBehavior behavior, TJobIn job)
 	{
 		execute(behavior, job, false);
 	}
 
-	protected <TBehavior extends AutoBehavior<TJob>, TJob extends Job> void execute(TBehavior behavior, TJob job, boolean overrideReverse)
+	protected <TBehavior extends AutoBehavior<TJob>, TJob extends Job, TJobIn extends TJob> void execute(TBehavior behavior, TJobIn job, boolean overrideReverse)
 	{
 		buffer(behavior, job, overrideReverse);
 		addExecuteAction();
 	}
 
-	protected <TBehavior extends AutoBehavior<TJob>, TJob extends Job> void buffer(TBehavior behavior, TJob job)
+	protected <TBehavior extends AutoBehavior<TJob>, TJob extends Job, TJobIn extends TJob> void buffer(TBehavior behavior, TJobIn job)
 	{
 		buffer(behavior, job, false);
 	}
 
-	protected <TBehavior extends AutoBehavior<TJob>, TJob extends Job> void buffer(TBehavior behavior, TJob job, boolean overrideReverse)
+	protected <TBehavior extends AutoBehavior<TJob>, TJob extends Job, TJobIn extends TJob> void buffer(TBehavior behavior, TJobIn job, boolean overrideReverse)
 	{
 		checkQueueState();
 
