@@ -3,12 +3,12 @@ package FTCEngine.Core;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
-import FTCEngine.Core.Auto.AutoOpModeBase;
-import FTCEngine.Delegates.Action;
+import FTCEngine.Core.Auto.ConfigOption;
+import FTCEngine.Core.Auto.JobSequence;
 import FTCEngine.Helpers.CollectionHelper;
 
 public abstract class OpModeBase extends OpMode
@@ -16,51 +16,69 @@ public abstract class OpModeBase extends OpMode
 	public OpModeBase()
 	{
 		//Create all helpers
-		allHelpers = new HashMap<Class<?>, Helper>();
+		time = new Time(this);
+		input = new Input(this);
+		debug = new Debug(this);
 
-		allHelpers.put(Time.class, new Time(this));
-		allHelpers.put(Input.class, new Input(this));
-		allHelpers.put(Telemetry.class, new Telemetry(this));
+		allHelpers = new Helper[]{time, input, debug};
 	}
 
+	private final Helper[] allHelpers;
 	private List<Behavior> allBehaviors; //Semi-readonly, sorted by class object hashcode for binary search
-	private final HashMap<Class<?>, Helper> allHelpers;
+	private List<ConfigOption> allConfigOptions;
+
+	public final Time time;
+	public final Input input;
+	public final Debug debug;
 
 	private OpModePhase currentPhase = OpModePhase.INVALID;
 
-	public boolean getIsAuto()
+	/**
+	 * This is the input source that will be used to change our config options.
+	 * Can be overridden
+	 */
+	protected Input.Source getConfigOptionInputSource()
 	{
-		return this instanceof AutoOpModeBase;
+		return Input.Source.CONTROLLER_1;
 	}
 
-	/**
-	 * This method will be invoked once before init to get all the behaviors we want to run.
-	 * You should create the new behaviors using the "new" keyword and add them into the list
-	 */
-	public abstract void addBehaviors(List<Behavior> behaviorList);
+	private JobSequence runningSequence;
 
+	/**
+	 * Returns the current phase of the opMode.
+	 */
 	public OpModePhase getPhase()
 	{
 		return currentPhase;
 	}
 
 	/**
-	 * Gets the helper object with its reflection class type
+	 * Returns whether the opMode is running a sequence or not.
+	 * Usually if a sequence is running, input should be paused.
 	 */
-	public <T extends Helper> T getHelper(Class<T> helperClass)
+	public boolean hasSequence()
 	{
-		Helper result = allHelpers.get(helperClass);
-		return helperClass.isInstance(result) ? (T) result : null;
+		return runningSequence != null;
 	}
 
 	/**
-	 * Gets the behavior from its class object
-	 * Returns null if found none
+	 * This method will be invoked once before init to get all the behaviors we want to run.
+	 * You should create the new behaviors using the "new" keyword and add them into the list
 	 */
-	public <T extends Behavior> T getBehavior(Class<T> behaviorClass)
+	protected abstract void addBehaviors(List<Behavior> behaviorList);
+
+	protected abstract void appendConfigOptions(List<ConfigOption> options);
+
+	public void assignSequence(JobSequence jobSequence)
 	{
-		int index = CollectionHelper.binarySearch(allBehaviors, PriorityExtractor.behaviorExtractor, behaviorClass, PriorityExtractor.classExtractor);
-		return index < 0 ? null : (T) allBehaviors.get(index);
+		if (jobSequence == null) runningSequence = null;
+		else
+		{
+			if (jobSequence.opMode != this) throw new IllegalArgumentException("Invalid jobSequence opMode");
+
+			runningSequence = jobSequence;
+			runningSequence.reset();
+		}
 	}
 
 	@Override
@@ -70,37 +88,47 @@ public abstract class OpModeBase extends OpMode
 		ArrayList<Behavior> behaviors = new ArrayList<>();
 		addBehaviors(behaviors);
 
-		allBehaviors = initializeBehaviors(behaviors);
+		allBehaviors = new ArrayList<Behavior>(behaviors.size());
+		CollectionHelper.sort(behaviors, PriorityExtractor.behaviorExtractor); //Sorts by class object hashcode
 
-		//Initialize internal op mode
-		currentPhase = OpModePhase.INITIALIZE;
-		for (Helper helper : allHelpers.values()) helper.beforeInit();
-
-		//Awake all behaviors
-		for (int i = 0; i < allBehaviors.size(); i++)
+		for (int i = 0; i < behaviors.size(); i++)
 		{
-			allBehaviors.get(i).awake(hardwareMap);
-		}
+			Behavior current = behaviors.get(i);
 
-		telemetry.update();
-
-		for (Helper helper : allHelpers.values()) helper.afterInit();
-	}
-
-	private static List<Behavior> initializeBehaviors(ArrayList<Behavior> source)
-	{
-		List<Behavior> result = new ArrayList<Behavior>(source.size());
-		CollectionHelper.sort(source, PriorityExtractor.behaviorExtractor); //Sorts by class object hashcode
-
-		for (int i = 0; i < source.size(); i++)
-		{
-			Behavior current = source.get(i);
-
-			if (i == 0 || current.getClass() != result.get(i - 1).getClass()) result.add(current);
+			if (i == 0 || current.getClass() != allBehaviors.get(i - 1).getClass()) allBehaviors.add(current);
 			else throw new IllegalArgumentException("Cannot add two behaviors with the same type! Duplicate type: " + current.getClass());
 		}
 
-		return result;
+		//Initialize internal op mode
+		for (Helper helper : allHelpers) helper.beforeInit();
+		currentPhase = OpModePhase.INITIALIZE;
+
+		//Awake all behaviors
+		for (int i = 0; i < allBehaviors.size(); i++) allBehaviors.get(i).awake(hardwareMap);
+		for (Helper helper : allHelpers) helper.afterInit();
+
+		//Register all config options
+		allConfigOptions = new ArrayList<>();
+		Set<Input.Button> buttons = new HashSet<>();
+
+		appendConfigOptions(allConfigOptions);
+
+		//Check to make sure that no two options use the same button
+		for (int i = 0; i < allConfigOptions.size(); i++)
+		{
+			ConfigOption option = allConfigOptions.get(i);
+
+			for (int j = 0; j < option.getButtonCount(); j++)
+			{
+				Input.Button button = option.getButton(j);
+
+				if (buttons.add(button)) input.registerButton(getConfigOptionInputSource(), button);
+				else throw new IllegalArgumentException("Two config options are using the same button " + button.name());
+			}
+		}
+
+		//Telemetry
+		telemetry.update();
 	}
 
 	@Override
@@ -108,9 +136,33 @@ public abstract class OpModeBase extends OpMode
 	{
 		super.init_loop();
 
+		//Update helpers
 		currentPhase = OpModePhase.INIT_LOOP;
-		for (Helper helper : allHelpers.values()) helper.initLoop();
+		for (Helper helper : allHelpers) helper.initLoop();
 
+		//Update config options
+		Input.Source source = getConfigOptionInputSource();
+		StringBuilder builder = new StringBuilder();
+
+		for (ConfigOption option : allConfigOptions)
+		{
+			builder.append(option.getLabel());
+			builder.append(" (");
+
+			for (int i = 0; i < option.getButtonCount(); i++)
+			{
+				Input.Button button = option.getButton(i);
+				builder.append(button.name());
+
+				builder.append(i == option.getButtonCount() - 1 ? ')' : ',');
+				if (input.getButtonDown(source, button)) option.onButtonDown(button);
+			}
+
+			debug.addData(builder.toString(), option.getOption());
+			builder.setLength(0); //Clears builder
+		}
+
+		//Telemetry
 		telemetry.update();
 	}
 
@@ -120,35 +172,33 @@ public abstract class OpModeBase extends OpMode
 		super.start();
 
 		currentPhase = OpModePhase.START;
-		for (Helper helper : allHelpers.values()) helper.beforeStart();
 
-		for (int i = 0; i < allBehaviors.size(); i++)
-		{
-			allBehaviors.get(i).start();
-		}
+		for (Helper helper : allHelpers) helper.beforeStart();
+		for (Behavior behavior : allBehaviors) behavior.start();
+		for (Helper helper : allHelpers) helper.afterStart();
 
-		telemetry.update();
-
-		for (Helper helper : allHelpers.values()) helper.afterStart();
+		telemetry.update(); //Telemetry
 	}
 
 	@Override
 	public void loop()
 	{
 		currentPhase = OpModePhase.LOOP;
-		for (Helper helper : allHelpers.values()) helper.beforeLoop();
 
-		//Main loop
-		for (int i = 0; i < allBehaviors.size(); i++)
+		for (Helper helper : allHelpers) helper.beforeUpdate();
+
+		//Update sequence
+		if (hasSequence())
 		{
-			allBehaviors.get(i).update();
+			boolean completed = runningSequence.run();
+			if (completed) runningSequence = null;
 		}
 
-		telemetry.update();
+		for (Behavior behavior : allBehaviors) behavior.update();
+		for (Helper helper : allHelpers) helper.afterUpdate();
 
-		for (Helper helper : allHelpers.values()) helper.afterLoop();
+		telemetry.update(); //Telemetry
 	}
-
 
 	@Override
 	public void stop()
@@ -156,17 +206,23 @@ public abstract class OpModeBase extends OpMode
 		super.stop();
 
 		currentPhase = OpModePhase.STOP;
-		for (Helper helper : allHelpers.values()) helper.beforeStop();
 
-		for (int i = 0; i < allBehaviors.size(); i++)
-		{
-			allBehaviors.get(i).stop();
-		}
+		for (Helper helper : allHelpers) helper.beforeStop();
+		for (Behavior behavior : allBehaviors) behavior.stop();
+		for (Helper helper : allHelpers) helper.afterStop();
 
-		telemetry.update();
-
-		for (Helper helper : allHelpers.values()) helper.afterStop();
+		telemetry.update(); //Telemetry
 		currentPhase = OpModePhase.INVALID;
+	}
+
+	/**
+	 * Gets the behavior from its class object
+	 * Returns null if found none
+	 */
+	public <T extends Behavior> T getBehavior(Class<T> behaviorClass)
+	{
+		int index = CollectionHelper.binarySearch(allBehaviors, PriorityExtractor.behaviorExtractor, behaviorClass, PriorityExtractor.classExtractor);
+		return index < 0 ? null : (T)allBehaviors.get(index);
 	}
 
 	/**
@@ -206,11 +262,11 @@ public abstract class OpModeBase extends OpMode
 		{
 		}
 
-		public void beforeLoop()
+		public void beforeUpdate()
 		{
 		}
 
-		public void afterLoop()
+		public void afterUpdate()
 		{
 		}
 
@@ -223,6 +279,9 @@ public abstract class OpModeBase extends OpMode
 		}
 	}
 
+	/**
+	 * A helper class used for sorting the behaviors.
+	 */
 	private static class PriorityExtractor
 	{
 		public static final BehaviorExtractor behaviorExtractor = new BehaviorExtractor();

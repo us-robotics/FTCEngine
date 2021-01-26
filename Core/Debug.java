@@ -1,8 +1,8 @@
 package FTCEngine.Core;
 
-public class Telemetry extends OpModeBase.Helper
+public class Debug extends OpModeBase.Helper
 {
-	public Telemetry(OpModeBase opMode)
+	public Debug(OpModeBase opMode)
 	{
 		super(opMode);
 	}

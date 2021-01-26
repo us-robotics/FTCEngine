@@ -14,6 +14,4 @@ public abstract class Job
 		if (!getIsDone()) isDone = true;
 		else throw new IllegalStateException("AutoJob is already finished!");
 	}
-
-	public void reverse() {}
 }

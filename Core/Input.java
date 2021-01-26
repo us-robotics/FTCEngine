@@ -126,9 +126,9 @@ public class Input extends OpModeBase.Helper
 	}
 
 	@Override
-	public void beforeLoop()
+	public void beforeUpdate()
 	{
-		super.beforeLoop();
+		super.beforeUpdate();
 		updateAll();
 	}
 

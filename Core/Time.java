@@ -41,9 +41,9 @@ public class Time extends OpModeBase.Helper
 	}
 
 	@Override
-	public void afterLoop()
+	public void afterUpdate()
 	{
-		super.afterLoop();
+		super.afterUpdate();
 		previousTime = System.nanoTime();
 	}
 }
