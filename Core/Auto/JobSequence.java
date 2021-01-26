@@ -14,7 +14,8 @@ public abstract class JobSequence
 		queuedJobs = new ArrayList<>();
 		queueJobs();
 
-		jobs = (BehaviorJob<?>[])queuedJobs.toArray();
+		jobs = new BehaviorJob[queuedJobs.size()];
+		queuedJobs.toArray(jobs);
 		queuedJobs = null;
 
 		if (jobs[jobs.length - 1] != executeJobAction) throw new IllegalStateException("No execute action was appended after a job was queued!");

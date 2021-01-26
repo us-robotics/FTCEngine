@@ -2,8 +2,6 @@ package FTCEngine.Core;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import FTCEngine.Core.Auto.AutoOpModeBase;
-
 /**
  * A basic class classifying and controlling different mechanism/part of the robot
  */
@@ -18,11 +16,6 @@ public abstract class Behavior
 	}
 
 	protected final OpModeBase opMode;
-
-	protected boolean getIsAuto()
-	{
-		return opMode instanceof AutoOpModeBase;
-	}
 
 	/**
 	 * This method will get invoked one time between the init button and the play button
