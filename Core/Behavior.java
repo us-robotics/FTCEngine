@@ -26,6 +26,15 @@ public abstract class Behavior
 	}
 
 	/**
+	 * Invoked continuously after initialization before start.
+	 * First invocation happens right after awake.
+	 */
+	public void awakeUpdate()
+	{
+
+	}
+
+	/**
 	 * This method will get invoked once when the driver pressed the play button
 	 */
 	public void start()

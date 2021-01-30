@@ -136,8 +136,10 @@ public abstract class OpModeBase extends OpMode
 	{
 		super.init_loop();
 
-		//Update helpers
+		//Update
 		currentPhase = OpModePhase.INIT_LOOP;
+
+		for (int i = 0; i < allBehaviors.size(); i++) allBehaviors.get(i).awakeUpdate();
 		for (Helper helper : allHelpers) helper.initLoop();
 
 		//Update config options
