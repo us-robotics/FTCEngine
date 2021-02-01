@@ -10,21 +10,12 @@ public abstract class JobSequence
 	public JobSequence(OpModeBase opMode)
 	{
 		this.opMode = opMode;
-
-		queuedJobs = new ArrayList<>();
-		queueJobs();
-
-		jobs = new BehaviorJob[queuedJobs.size()];
-		queuedJobs.toArray(jobs);
-		queuedJobs = null;
-
-		if (jobs[jobs.length - 1] != executeJobAction) throw new IllegalStateException("No execute action was appended after a job was queued!");
 	}
 
-	private ArrayList<BehaviorJob<?>> queuedJobs; //Temporary array list used to queue all jobs
-	private final BehaviorJob<?>[] jobs;
-
 	public final OpModeBase opMode;
+	private ArrayList<BehaviorJob<?>> jobs;
+
+	private boolean queuedJobs;
 	private int currentJobIndex;
 
 	/**
@@ -39,6 +30,22 @@ public abstract class JobSequence
 	 */
 	protected abstract void queueJobs();
 
+	public void tryQueueJobs()
+	{
+		if (queuedJobs) return;
+
+		jobs = new ArrayList<>();
+		queueJobs();
+		queuedJobs = true;
+
+		if (jobs.get(jobs.size() - 1) != executeJobAction) throw new IllegalStateException("No execute action was appended after a job was queued!");
+	}
+
+	public void reset()
+	{
+		currentJobIndex = 0;
+	}
+
 	protected <TBehavior extends AutoBehavior<TJob>, TJob extends Job, TJobIn extends TJob> void execute(TBehavior behavior, TJobIn job)
 	{
 		buffer(behavior, job);
@@ -48,7 +55,7 @@ public abstract class JobSequence
 	protected <TBehavior extends AutoBehavior<TJob>, TJob extends Job, TJobIn extends TJob> void buffer(TBehavior behavior, TJobIn job)
 	{
 		checkQueueState();
-		queuedJobs.add(new BehaviorJob<>(behavior, job));
+		jobs.add(new BehaviorJob<>(behavior, job));
 	}
 
 	protected void execute()
@@ -61,20 +68,20 @@ public abstract class JobSequence
 	{
 		checkQueueState();
 
-		queuedJobs.add(new WaitJob(second, opMode));
+		jobs.add(new WaitJob(second, opMode));
 		addExecuteAction();
 	}
 
 	private void addExecuteAction()
 	{
-		if (queuedJobs.size() == 0 || queuedJobs.get(queuedJobs.size() - 1) != executeJobAction) queuedJobs.add(executeJobAction);
+		if (jobs.size() == 0 || jobs.get(jobs.size() - 1) != executeJobAction) jobs.add(executeJobAction);
 		else throw new IllegalStateException("Cannot execute without adding any job!");
 	}
 
 	private void checkQueueState()
 	{
-		if (jobs == null && queuedJobs != null) return;
-		throw new IllegalStateException("Invalid time for queueing jobs! You should only queue in the constructor.");
+		if (jobs != null && !queuedJobs) return;
+		throw new IllegalStateException("Invalid time for queueing jobs! You should only queue in the queueJobs method.");
 	}
 
 	/**
@@ -84,24 +91,20 @@ public abstract class JobSequence
 	 */
 	public boolean run()
 	{
-		if (currentJobIndex >= jobs.length) return true; //All jobs finished
+		if (!queuedJobs) throw new IllegalStateException("Sequence not queued!");
+		if (currentJobIndex >= jobs.size()) return true; //All jobs finished
 
 		int current = currentJobIndex;
 		boolean allJobsFinished = true;
 
-		while (jobs[current] != executeJobAction)
+		while (jobs.get(current) != executeJobAction)
 		{
-			allJobsFinished &= jobs[current].updateJob();
+			allJobsFinished &= jobs.get(current).updateJob();
 			current++;
 		}
 
 		if (allJobsFinished) currentJobIndex = current + 1;
-		return currentJobIndex >= jobs.length;
-	}
-
-	public void reset()
-	{
-		currentJobIndex = 0;
+		return currentJobIndex >= jobs.size();
 	}
 
 	private static class BehaviorJob<TJob extends Job>

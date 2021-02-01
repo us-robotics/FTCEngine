@@ -77,6 +77,8 @@ public abstract class OpModeBase extends OpMode
 			if (jobSequence.opMode != this) throw new IllegalArgumentException("Invalid jobSequence opMode");
 
 			runningSequence = jobSequence;
+
+			runningSequence.tryQueueJobs();
 			runningSequence.reset();
 		}
 	}
