@@ -38,6 +38,7 @@ public abstract class JobSequence
 		queueJobs();
 		queuedJobs = true;
 
+		if (jobs.size() == 0) return;
 		if (jobs.get(jobs.size() - 1) != executeJobAction) throw new IllegalStateException("No execute action was appended after a job was queued!");
 	}
 
@@ -55,6 +56,12 @@ public abstract class JobSequence
 	protected <TBehavior extends AutoBehavior<TJob>, TJob extends Job, TJobIn extends TJob> void buffer(TBehavior behavior, TJobIn job)
 	{
 		checkQueueState();
+
+//		for (int i = jobs.size() - 1; ; i--)
+//		{
+//
+//		}
+
 		jobs.add(new BehaviorJob<>(behavior, job));
 	}
 
