@@ -57,10 +57,13 @@ public abstract class JobSequence
 	{
 		checkQueueState();
 
-//		for (int i = jobs.size() - 1; ; i--)
-//		{
-//
-//		}
+		for (int i = jobs.size() - 1; i >= 0; i--)
+		{
+			BehaviorJob<?> current = jobs.get(i);
+			if (current == executeJobAction) break;
+
+			if (current.behavior == behavior) throw new IllegalArgumentException("Cannot buffer two concurrent jobs to the same behavior!");
+		}
 
 		jobs.add(new BehaviorJob<>(behavior, job));
 	}
