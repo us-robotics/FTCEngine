@@ -243,6 +243,6 @@ public final class Vector2
 	@Override
 	public String toString()
 	{
-		return "(" + x + "," + y + ")";
+		return String.format("(%.4f, %.4f)", x, y);
 	}
 }

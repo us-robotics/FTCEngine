@@ -2,6 +2,8 @@ package FTCEngine.Math;
 
 import android.os.Build;
 
+import java.text.MessageFormat;
+
 public final class Vector3
 {
 	public Vector3(float x, float y, float z)
@@ -199,6 +201,6 @@ public final class Vector3
 	@Override
 	public String toString()
 	{
-		return "(" + x + "," + y + "," + z + ")";
+		return String.format("(%.4f, %.4f, %.4f)", x, y, z);
 	}
 }
