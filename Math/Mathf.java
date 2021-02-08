@@ -153,4 +153,13 @@ public class Mathf
 		int result = value % length;
 		return result < 0 ? result + length : result;
 	}
+
+	/**
+	 * Returns the a value between zero to one by sampling a sigmoid curve at value.
+	 */
+	public static float sigmoid(float value)
+	{
+		value = clamp01(value) * (float)Math.PI + (float)Math.PI / 2f;
+		return (float)Math.sin(value) / 2f + 0.5f;
+	}
 }
