@@ -159,7 +159,7 @@ public class Mathf
 	 */
 	public static float sigmoid(float value)
 	{
-		value = clamp01(value) * (float)Math.PI + (float)Math.PI / 2f;
+		value = clamp01(value) * (float)Math.PI - (float)Math.PI / 2f;
 		return (float)Math.sin(value) / 2f + 0.5f;
 	}
 }
