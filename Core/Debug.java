@@ -11,4 +11,9 @@ public class Debug extends OpModeBase.Helper
 	{
 		opMode.telemetry.addData(caption, value);
 	}
+
+	public void addData(String caption)
+	{
+		opMode.telemetry.addData(caption, "");
+	}
 }

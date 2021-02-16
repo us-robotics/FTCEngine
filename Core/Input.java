@@ -167,7 +167,10 @@ public class Input extends OpModeBase.Helper
 		RIGHT_TRIGGER,
 
 		LEFT_JOYSTICK,
-		RIGHT_JOYSTICK;
+		RIGHT_JOYSTICK,
+
+		LEFT_JOYSTICK_BUTTON,
+		RIGHT_JOYSTICK_BUTTON;
 
 		public static final int length = Button.values().length;
 	}
@@ -331,6 +334,24 @@ public class Input extends OpModeBase.Helper
 			public Boolean apply(Gamepad input)
 			{
 				return input.right_bumper;
+			}
+		});
+
+		put(Button.LEFT_JOYSTICK_BUTTON, new Func<Gamepad, Boolean>()
+		{
+			@Override
+			public Boolean apply(Gamepad input)
+			{
+				return input.left_stick_button;
+			}
+		});
+
+		put(Button.RIGHT_JOYSTICK_BUTTON, new Func<Gamepad, Boolean>()
+		{
+			@Override
+			public Boolean apply(Gamepad input)
+			{
+				return input.right_stick_button;
 			}
 		});
 	}};
