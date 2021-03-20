@@ -1,9 +1,5 @@
 package FTCEngine.Math;
 
-import android.os.Build;
-
-import java.text.MessageFormat;
-
 public final class Vector3
 {
 	public Vector3(float x, float y, float z)
