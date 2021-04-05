@@ -158,7 +158,7 @@ public abstract class OpModeBase extends OpMode
 				Input.Button button = option.getButton(i);
 				builder.append(button.name());
 
-				builder.append(i == option.getButtonCount() - 1 ? ')' : ',');
+				builder.append(i == option.getButtonCount() - 1 ? ")" : ", ");
 				if (input.getButtonDown(source, button)) option.onButtonDown(button);
 			}
 
