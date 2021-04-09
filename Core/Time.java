@@ -9,13 +9,14 @@ public class Time extends OpModeBase.Helper
 
 	private long initialTime;
 	private long previousTime;
+	private float deltaTime;
 
 	/**
 	 * @return the delta time from the previous frame to this frame in seconds
 	 */
 	public float getDeltaTime()
 	{
-		return nanoToSec(System.nanoTime() - previousTime);
+		return deltaTime;
 	}
 
 	/**
@@ -35,15 +36,25 @@ public class Time extends OpModeBase.Helper
 	public void beforeInit()
 	{
 		super.beforeInit();
-
 		initialTime = System.nanoTime();
+	}
+
+	@Override
+	public void beforeStart()
+	{
+		super.beforeStart();
 		previousTime = System.nanoTime();
 	}
 
 	@Override
-	public void afterUpdate()
+	public void beforeUpdate()
 	{
-		super.afterUpdate();
-		previousTime = System.nanoTime();
+		super.beforeUpdate();
+		long time = System.nanoTime();
+
+		deltaTime = nanoToSec(time - previousTime);
+		deltaTime = Math.max(deltaTime, 0f);
+
+		previousTime = time;
 	}
 }
