@@ -39,7 +39,7 @@ public abstract class JobSequence
 		queuedJobs = true;
 
 		if (jobs.size() == 0) return;
-		if (jobs.get(jobs.size() - 1) != executeJobAction) throw new IllegalStateException("No execute action was appended after a job was queued!");
+		if (jobs.get(jobs.size() - 1) != executeJobAction) addExecuteAction(); //No execute action at the end of sequence
 	}
 
 	public void reset()
